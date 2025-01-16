@@ -60,9 +60,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
    Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
 
-4. **Deploying to GCP (Optional):**
-
-### Terraform
+4. **Deploying to GCP via Terraform (Optional):**
 
 Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
 
