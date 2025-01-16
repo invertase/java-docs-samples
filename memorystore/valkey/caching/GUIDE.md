@@ -70,7 +70,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    Simply run:
 
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 
    Once started, you can make GET, POST, and DELETE requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
