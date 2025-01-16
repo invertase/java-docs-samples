@@ -76,6 +76,10 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
 
 6. **Deploying to GCP (Optional):**
+   
+   ## Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started)
+  Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
+
    With Terraform, you can provision:
 
    - **Cloud Run:** Runs your containerized Spring Boot application in a fully managed, serverless environment.
