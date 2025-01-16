@@ -38,7 +38,13 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
-   - Set up a GCP project, enabling Cloud Run, Memorystore, and Cloud SQL APIs if you plan to deploy to Google Cloud.
+
+     Project Setup
+
+   - Set up a GCP project
+   - Enable Cloud Run API
+   - Enable Memorystore API
+   - Cloud SQL APIs
 
 2. **Download the Example Code:**
    Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
