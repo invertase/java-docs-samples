@@ -8,7 +8,7 @@ TODO
 
 ## Why Caching Matters
 
-- **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, slashing response times.
+- **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, whilst reducing response times.
 - **Scalability:** By easing the load on your primary database, caching allows you to handle more requests smoothly as traffic grows.
 
 
