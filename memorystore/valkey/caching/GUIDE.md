@@ -5,7 +5,6 @@ In this tutorial, we’ll walk through the architectural concepts and deployment
 
 - **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, slashing response times.
 - **Scalability:** By easing the load on your primary database, caching allows you to handle more requests smoothly as traffic grows.
-- **User Experience:** Faster responses translate into happier users, which is especially crucial for high-traffic or interactive applications such as gaming and e-commerce platforms.
 
 **Common Use Cases:**
 
