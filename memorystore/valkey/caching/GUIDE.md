@@ -1,10 +1,7 @@
 # Building a Caching Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL
 Modern applications need to deliver fast, responsive user experiences at scale.
 
-In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while offloading your primary database
-
-TODO
-
+In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while also recuding the load on your database.
 
 ## Why Caching Matters
 
@@ -19,7 +16,7 @@ You’ll set up a caching service that:
 1. **Works with a PostgreSQL database** to store long-lived, persistent records.
 2. **Incorporates Valkey** as a high-speed, in-memory cache, fronting the PostgreSQL database.
 3. **Uses Spring Boot** to expose REST endpoints, providing a simple interface for reading, writing, and invalidating cached data.
-4. **Can be Dockerized and deployed to Google Cloud Platform (GCP)** for production, leveraging services like Cloud Run, Cloud SQL, and Memorystore.
+4. **A solution that can be Dockerized and deployed to Google Cloud Platform (GCP)** for production, leveraging services like Cloud Run, Cloud SQL, and Memorystore.
 
 By following this guide, you’ll have a reference architecture ready to adapt, test, and deploy to meet the performance needs of your application.
 
@@ -33,18 +30,19 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 ## Steps to Build
 
 1. **Set Up Your Environment:**
+   To get started, we will need to install Docker and ensure that we have a project setup in GCP with the required APIs enabled.
 
-     Install the following:
+     ## Install Docker on your local machine
 
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
 
-     Project Setup
+     ## Setting up your GCP Project
 
-   - Set up a GCP project
-   - Enable Cloud Run API
-   - Enable Memorystore API
-   - Cloud SQL APIs
+   - **GCP Project**: If a project does already exist, you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
+   - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
+   - **Enable Memorystore API**: Enable the [Memorystore API](https://console.cloud.google.com/marketplace/product/google/memorystore.googleapis.com).
+   - **Cloud SQL API**: Enable the [Cloud SQL API](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com).
 
 2. **Download the Example Code:**
    Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
@@ -59,17 +57,23 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    - **Configuration files:** For JDBC (PostgreSQL) and Jedis (Valkey) clients, allowing flexible environment-based configurations.
    - **Terraform scripts (optional):** Infrastructure as Code templates to spin up resources on Google Cloud.
 
+   The main application contains the following structure:
 
    - **Application Layer:** REST API endpoints expose CRUD operations for fetching, updating and deleting data.
    - **Data Access Layer:** This contains the logic for interacting with the cache and the PostgreSQL database.
    - **Caching Layer:** A controller checks Valkey first and falls back to the database if needed.
+  
+   To setup your application with your own configuration, navigate to your docker-compose.yaml file. Here you will be required to update the following fields:
 
-4. **Customize the Configuration:**
+   - `DB_URL`: Update this value from your database conbnection steing. If you do not have a database, you can create a [Cloud SQL](https://console.cloud.google.com/sql/instances) database.
+   - `DB_USERNAME`: Enter this value for your database user.
+   - `DB_PASSWORD`: Enter the value for your database passsword
+   - `VALKEY_HOST` Enter your MemoryStore for Valkey host. If you do not have an intance, you can create a new [Memorystore for Valkey instance](https://console.cloud.google.com/memorystore/valkey/locations/-/instances/)
+   - `VALKEY_PORT`: Enter the Memorystore for Valkey port from your preffered instance.
 
-   - Set your database URL, username, and password via environment variables or configuration files.
-   - Point your VALKEY_HOST and VALKEY_PORT environment variables to your Valkey instance (in development, set it to localhost when running via Docker Compose).
+   ** Note**: In development, you can set your set your `VALKEY_HOST` to localhost when running via Docker Compose.
 
-5. **Run Locally with Docker Compose:**
+6. **Run Locally with Docker Compose:**
    Use Docker Compose to start PostgreSQL, Valkey, and your Spring Boot app together. You’ll have a fully functional local environment that demonstrates how caching accelerates data retrieval.
 
    Simply run:
@@ -80,7 +84,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
    Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
 
-6. **Deploying to GCP (Optional):**
+7. **Deploying to GCP (Optional):**
    
    ## Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started)
   Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
@@ -111,12 +115,10 @@ As traffic increases, the architecture can scale horizontally:
 - **Memorystore (Valkey)** can be sized or upgraded to handle more cached data or higher throughput.
 - **Cloud SQL** can scale vertically or horizontally (with read replicas) as needed.
 
-Fine-tune cache expiration strategies (TTL values) and eviction policies, depending on your data access patterns.
+You can fine-tune cache expiration strategies (TTL values) and eviction policies, depending on your data access patterns.
 
 ## Conclusion
 
 By combining an in-memory store (Valkey) with a reliable database (PostgreSQL), all orchestrated by a Spring Boot application, you’ve built a caching solution that delivers high performance, reduces database load, and ensures an excellent user experience. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
 
-For more information check out the repository for the full project details and follow the instructions to get started:
-
-[https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/caching](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/caching)
+For more information check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/caching)) for the full project details and follow the instructions to get started:
