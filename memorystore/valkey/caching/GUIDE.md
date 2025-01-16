@@ -2,11 +2,11 @@
 
 Modern applications need to deliver fast, responsive user experiences at scale.
 
-In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while also recuding the load on your database.
+In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and Valkey, you can reduce latency while also reducing the load on your database.
 
 ## Why Caching Matters
 
-- **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, whilst reducing response times.
+- **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, while reducing response times.
 - **Scalability:** By reducing the workload on your database, applications can serve data directly from memory, increasing the capacity for requests.
 
 ## What You’ll Build
@@ -16,7 +16,7 @@ You’ll set up a caching service that:
 1. **Works with a PostgreSQL database** to store long-lived, persistent records.
 2. **Incorporates Valkey** as a high-speed, in-memory cache, fronting the PostgreSQL database.
 3. **Uses Spring Boot** to expose REST endpoints, providing a simple interface for reading, writing, and invalidating cached data.
-4. **A solution that can be Dockerized and deployed to Google Cloud Platform (GCP)** for production, leveraging services like Cloud Run, Cloud SQL, and Memorystore.
+4. **A solution that can be deployed to Google Cloud Platform (GCP)** for production, leveraging services like Cloud Run, Cloud SQL, and Memorystore.
 
 By following this guide, you’ll have a reference architecture ready to adapt, test, and deploy to meet the performance needs of your application.
 
@@ -30,16 +30,16 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 ## Steps to Build
 
 1. **Set Up Your Environment:**
-   To get started, we will need to install Docker and ensure that we have a project setup in GCP with the required APIs enabled.
+   To get started, we will need to install Docker and ensure that we have a project set up in GCP with the required APIs enabled.
 
-   ## Install Docker on your local machine
+   ### Install Docker on your local machine
 
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
 
    ### Setting up your GCP Project
 
-   - **GCP Project**: If a project does already exist, you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
+   - **GCP Project**: Use an existing project, alternatively you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
    - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
    - **Enable Memorystore API**: Enable the [Memorystore API](https://console.cloud.google.com/marketplace/product/google/memorystore.googleapis.com).
    - **Cloud SQL API**: Enable the [Cloud SQL API](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com).
@@ -47,7 +47,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 2. **Download the Example Code:**
    Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
 
-   You can download the code from this [source](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache)
+   You can download the code from the [Google Cloud Platform repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache).
 
 3. **Run Locally with Docker Compose:**
    Use Docker Compose to start PostgreSQL, Valkey, and your Spring Boot app together. You’ll have a fully functional local environment that demonstrates how caching accelerates data retrieval.
@@ -66,7 +66,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
 
-If not already download, you can download by following guides from [Hashicorp](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started)  
+If you haven't installed Terraform yet, you can download it by following the guides from [HashiCorp](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).  
 
 With Terraform, you can provision:
 
