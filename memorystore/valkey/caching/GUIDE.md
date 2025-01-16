@@ -112,6 +112,6 @@ Fine-tune cache expiration strategies (TTL values) and eviction policies, depend
 
 By combining an in-memory store (Valkey) with a reliable database (PostgreSQL), all orchestrated by a Spring Boot application, you’ve built a caching solution that delivers high performance, reduces database load, and ensures an excellent user experience. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
 
-Ready to dive into the code and start experimenting? Check out the repository for the full project details and follow the instructions to get started:
+For more information check out the repository for the full project details and follow the instructions to get started:
 
 [https://github.com/invertase/valkey-demos/tree/main/demos/cache](https://github.com/invertase/valkey-demos/tree/main/demos/cache)
