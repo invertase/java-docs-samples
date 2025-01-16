@@ -56,7 +56,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 
    - **Application Layer:** REST API endpoints expose CRUD operations for fetching, updating and deleting data.
-   - **Data Access Layer:** Repositories interact with PostgreSQL for persistent storage.
+   - **Data Access Layer:** This contains the logic for interacting with the cache and the PostgreSQL database.
    - **Caching Layer:** A controller checks Valkey first and falls back to the database if needed.
 
 4. **Customize the Configuration:**
