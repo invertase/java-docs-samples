@@ -47,8 +47,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 2. **Download the Example Code:**
    Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
 
-   **Get the code here:**  
-   [https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache)
+   You can download the code from this [source](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache)
 
 3. **Run Locally with Docker Compose:**
    Use Docker Compose to start PostgreSQL, Valkey, and your Spring Boot app together. You’ll have a fully functional local environment that demonstrates how caching accelerates data retrieval.
