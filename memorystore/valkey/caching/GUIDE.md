@@ -45,7 +45,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
 
    **Get the code here:**  
-   [https://github.com/invertase/valkey-demos/tree/main/demos/cache](https://github.com/invertase/valkey-demos/tree/main/demos/cache)
+   [https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache)
 
 3. **Setup the application:**
    In the repository, you’ll find:
