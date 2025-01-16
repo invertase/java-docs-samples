@@ -97,11 +97,6 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
    After Terraform has deployed your infrastructure, you’ll have a production-ready caching architecture running in the cloud.
 
-## Testing and Validation
-
-- **Functional Tests:** Use `curl` or a tool like Postman to send requests to your deployed Cloud Run service. Ensure that reads are fast, and updates reflect in both the cache and database.
-- **Load Testing:** Run load tests (e.g., with JMeter or Locust) to confirm performance gains. Compare response times with and without caching enabled.
-- **Monitoring & Logging:** Integrate Google Cloud’s operations suite (formerly Stackdriver) to monitor query times, latency, and error rates, ensuring your caching strategy is delivering the intended benefits.
 
 ## Scaling and Optimization
 
