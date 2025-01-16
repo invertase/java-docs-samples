@@ -32,13 +32,11 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 1. **Set Up Your Environment:**
    To get started, we will need to install Docker and ensure that we have a project setup in GCP with the required APIs enabled.
 
-     ## Install Docker on your local machine
-
+   ## Install Docker on your local machine
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
 
-     ## Setting up your GCP Project
-
+   ## Setting up your GCP Project
    - **GCP Project**: If a project does already exist, you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
    - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
    - **Enable Memorystore API**: Enable the [Memorystore API](https://console.cloud.google.com/marketplace/product/google/memorystore.googleapis.com).
@@ -50,30 +48,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    **Get the code here:**  
    [https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache)
 
-3. **Setup the application:**
-   In the repository, you’ll find:
-
-   - **Spring Boot project files:** Main application class, REST controllers, repository classes, and caching logic.
-   - **Configuration files:** For JDBC (PostgreSQL) and Jedis (Valkey) clients, allowing flexible environment-based configurations.
-   - **Terraform scripts (optional):** Infrastructure as Code templates to spin up resources on Google Cloud.
-
-   The main application contains the following structure:
-
-   - **Application Layer:** REST API endpoints expose CRUD operations for fetching, updating and deleting data.
-   - **Data Access Layer:** This contains the logic for interacting with the cache and the PostgreSQL database.
-   - **Caching Layer:** A controller checks Valkey first and falls back to the database if needed.
-  
-   To setup your application with your own configuration, navigate to your docker-compose.yaml file. Here you will be required to update the following fields:
-
-   - `DB_URL`: Update this value from your database conbnection steing. If you do not have a database, you can create a [Cloud SQL](https://console.cloud.google.com/sql/instances) database.
-   - `DB_USERNAME`: Enter this value for your database user.
-   - `DB_PASSWORD`: Enter the value for your database passsword
-   - `VALKEY_HOST` Enter your MemoryStore for Valkey host. If you do not have an intance, you can create a new [Memorystore for Valkey instance](https://console.cloud.google.com/memorystore/valkey/locations/-/instances/)
-   - `VALKEY_PORT`: Enter the Memorystore for Valkey port from your preffered instance.
-
-   ** Note**: In development, you can set your set your `VALKEY_HOST` to localhost when running via Docker Compose.
-
-6. **Run Locally with Docker Compose:**
+3. **Run Locally with Docker Compose:**
    Use Docker Compose to start PostgreSQL, Valkey, and your Spring Boot app together. You’ll have a fully functional local environment that demonstrates how caching accelerates data retrieval.
 
    Simply run:
@@ -84,7 +59,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
    Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
 
-7. **Deploying to GCP (Optional):**
+4. **Deploying to GCP (Optional):**
    
    ## Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started)
   Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
