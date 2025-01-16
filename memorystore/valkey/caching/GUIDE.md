@@ -42,7 +42,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    - Set up a GCP project, enabling Cloud Run, Memorystore, and Cloud SQL APIs if you plan to deploy to Google Cloud.
 
 2. **Download the Example Code:**
-   Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. It includes everything you need—Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
+   Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
 
    **Get the code here:**  
    [https://github.com/invertase/valkey-demos/tree/main/demos/cache](https://github.com/invertase/valkey-demos/tree/main/demos/cache)
