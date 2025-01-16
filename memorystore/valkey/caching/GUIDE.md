@@ -55,7 +55,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    - **Terraform scripts (optional):** Infrastructure as Code templates to spin up resources on Google Cloud.
 
 
-   - **Application Layer:** REST endpoints expose CRUD operations for cached data.
+   - **Application Layer:** REST API endpoints expose CRUD operations for fetching, updating and deleting data.
    - **Data Access Layer:** Repositories interact with PostgreSQL for persistent storage.
    - **Caching Layer:** A controller checks Valkey first and falls back to the database if needed.
 
