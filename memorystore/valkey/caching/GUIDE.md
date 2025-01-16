@@ -64,7 +64,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
 
-If you haven't installed Terraform yet, you can download it by following the guides from [HashiCorp](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).  
+If you haven't installed Terraform yet, you can download it by following the guides from [HashiCorp](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).
 
 With Terraform, you can provision:
 
