@@ -1,4 +1,5 @@
 # Building a Caching Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL
+
 Modern applications need to deliver fast, responsive user experiences at scale.
 
 In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while also recuding the load on your database.
@@ -7,7 +8,6 @@ In this tutorial, we’ll walk through the architectural concepts and deployment
 
 - **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, whilst reducing response times.
 - **Scalability:** By reducing the workload on your database, applications can serve data directly from memory, increasing the capacity for requests.
-
 
 ## What You’ll Build
 
@@ -33,10 +33,12 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    To get started, we will need to install Docker and ensure that we have a project setup in GCP with the required APIs enabled.
 
    ## Install Docker on your local machine
+
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
 
    ## Setting up your GCP Project
+
    - **GCP Project**: If a project does already exist, you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
    - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
    - **Enable Memorystore API**: Enable the [Memorystore API](https://console.cloud.google.com/marketplace/product/google/memorystore.googleapis.com).
@@ -60,29 +62,29 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
 
 4. **Deploying to GCP (Optional):**
-   
-  ### Terraform
-  Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way. 
-  
-  If not already download, you can down from this [source](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).
 
-   With Terraform, you can provision:
+### Terraform
 
-   - **Cloud Run:** Runs your containerized Spring Boot application in a fully managed, serverless environment.
-   - **Cloud SQL for PostgreSQL:** Provides a fully managed PostgreSQL instance.
-   - **Memorystore (Valkey):** A fully managed Redis-compatible cache.
+Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
 
-   Adjust the Terraform variables for your project, initialize Terraform, and apply the configuration. Once deployed, set up environment variables in Cloud Run to point to the appropriate instances.
+If not already download, you can down from this [source](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).
 
-   Visit the repository’s Terraform directory for detailed instructions and run:
+With Terraform, you can provision:
 
-   ```bash
-   terraform init
-   terraform apply
-   ```
+- **Cloud Run:** Runs your containerized Spring Boot application in a fully managed, serverless environment.
+- **Cloud SQL for PostgreSQL:** Provides a fully managed PostgreSQL instance.
+- **Memorystore (Valkey):** A fully managed Redis-compatible cache.
 
-   After Terraform has deployed your infrastructure, you’ll have a production-ready caching architecture running in the cloud.
+  Adjust the Terraform variables for your project, initialize Terraform, and apply the configuration. Once deployed, set up environment variables in Cloud Run to point to the appropriate instances.
 
+  Visit the repository’s Terraform directory for detailed instructions and run:
+
+  ```bash
+  terraform init
+  terraform apply
+  ```
+
+  After Terraform has deployed your infrastructure, you’ll have a production-ready caching architecture running in the cloud.
 
 ## Scaling and Optimization
 
