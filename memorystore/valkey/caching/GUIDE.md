@@ -35,7 +35,10 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 1. **Set Up Your Environment:**
 
-   - Install Java 17 (or later), Maven, Docker, and Docker Compose locally.
+     Install the following:
+
+   - [Docker](https://www.docker.com)
+   - [Docker Compose](https://docs.docker.com/compose/)
    - Set up a GCP project, enabling Cloud Run, Memorystore, and Cloud SQL APIs if you plan to deploy to Google Cloud.
 
 2. **Download the Example Code:**
