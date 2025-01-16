@@ -114,4 +114,4 @@ By combining an in-memory store (Valkey) with a reliable database (PostgreSQL), 
 
 For more information check out the repository for the full project details and follow the instructions to get started:
 
-[https://github.com/invertase/valkey-demos/tree/main/demos/cache](https://github.com/invertase/valkey-demos/tree/main/demos/cache)
+[https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/caching](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/caching)
