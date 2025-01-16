@@ -1,7 +1,7 @@
 # Build a Caching Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL
 Modern applications need to deliver fast, responsive user experiences at scale.
 
-In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while offload ing your primary database
+In this tutorial, we’ll walk through the architectural concepts and deployment steps for creating a high-performance caching service on Google Cloud. Using a combination of Java, Spring Boot, PostgreSQL, and [Valkey](https://github.com/invertase/valkey-demos) you can significantly reduce latency, while offloading your primary database
 
 TODO
 
