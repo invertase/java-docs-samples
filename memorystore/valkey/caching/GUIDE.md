@@ -95,7 +95,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    terraform apply
    ```
 
-   After Terraform finishes, you’ll have a production-ready caching architecture running in the cloud.
+   After Terraform has deployed your infrastructure, you’ll have a production-ready caching architecture running in the cloud.
 
 ## Testing and Validation
 
