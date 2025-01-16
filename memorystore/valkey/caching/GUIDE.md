@@ -54,7 +54,6 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    - **Configuration files:** For JDBC (PostgreSQL) and Jedis (Valkey) clients, allowing flexible environment-based configurations.
    - **Terraform scripts (optional):** Infrastructure as Code templates to spin up resources on Google Cloud.
 
-   The code is well-organized, with clear separation of concerns:
 
    - **Application Layer:** REST endpoints expose CRUD operations for cached data.
    - **Data Access Layer:** Repositories interact with PostgreSQL for persistent storage.
