@@ -6,11 +6,6 @@ In this tutorial, we’ll walk through the architectural concepts and deployment
 - **Speed & Latency:** Storing frequently requested data in memory avoids repeated round-trip queries to databases, slashing response times.
 - **Scalability:** By easing the load on your primary database, caching allows you to handle more requests smoothly as traffic grows.
 
-**Common Use Cases:**
-
-- **E-Commerce:** Quickly serve product catalogs, pricing details, and inventory counts.
-- **Gaming:** Cache player stats, sessions, and game states for real-time gaming experiences.
-- **API Gateways & Microservices:** Reduce downstream service calls by serving cached API responses.
 
 ## What You’ll Build
 
