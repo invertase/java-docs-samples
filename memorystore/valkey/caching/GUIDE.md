@@ -28,7 +28,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 The high-level architecture looks like this:
 
-- **Spring Boot Application:** Serves as the middle tier, responding to API calls. It checks Valkey first for cached results; if not found, it retrieves data from PostgreSQL, then updates the cache.
+- **Spring Boot Application:** Serves as the middle tier for responding to API calls. When a request is received, the API checks Valkey for cached results; if no entries are found, then the API will retrieve data from the PostgreSQL database and update the cache.
 - **Valkey (In-Memory Cache):** A Redis-like memory store that keeps hot data ready to be served instantly.
 - **PostgreSQL Database:** Your source of truth for all data. The cache reduces how often the app queries this database.
 - **Google Cloud Infrastructure:** Deployed using Terraform, you can host the application on Cloud Run, store data in Cloud SQL for PostgreSQL, and leverage Memorystore for Valkey.
