@@ -26,7 +26,6 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 
 ## Architecture Overview
 
-The high-level architecture looks like this:
 
 - **Spring Boot Application:** Serves as the middle tier for responding to API calls. When a request is received, the API checks Valkey for cached results; if no entries are found, then the API will retrieve data from the PostgreSQL database and update the cache.
 - **Valkey (In-Memory Cache):** A Redis-like memory store that keeps hot data ready to be served instantly.
