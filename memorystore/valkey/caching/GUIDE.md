@@ -37,7 +37,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    - [Docker](https://www.docker.com)
    - [Docker Compose](https://docs.docker.com/compose/)
 
-   ## Setting up your GCP Project
+   ### Setting up your GCP Project
 
    - **GCP Project**: If a project does already exist, you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
    - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
