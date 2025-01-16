@@ -1,4 +1,4 @@
-**Build a Caching Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL**
+# Build a Caching Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL
 
 Modern applications need to deliver fast, responsive user experiences at scale. Whether you're hosting an e-commerce storefront, running a real-time gaming backend, or providing dynamic content APIs, performance and reliability are key. One tried-and-true way to meet these demands is by adding a caching layer.
 
