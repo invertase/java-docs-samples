@@ -47,7 +47,7 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
    **Get the code here:**  
    [https://github.com/invertase/valkey-demos/tree/main/demos/cache](https://github.com/invertase/valkey-demos/tree/main/demos/cache)
 
-3. **Review the Code Structure:**
+3. **Setup the application:**
    In the repository, you’ll find:
 
    - **Spring Boot project files:** Main application class, REST controllers, repository classes, and caching logic.
