@@ -27,6 +27,86 @@ By following this guide, you’ll have a reference architecture ready to adapt, 
 - **PostgreSQL Database:** Your source of truth for all data. The cache reduces how often the app queries this database.
 - **Google Cloud Infrastructure:** Deployed using Terraform, you can host the application on Cloud Run, store data in Cloud SQL for PostgreSQL, and leverage Memorystore for Valkey.
 
+### Writing to the cache
+
+```java
+import redis.clients.jedis.Jedis;
+  public long create(Item item) {
+    // Create the data in the database
+    long itemId = itemsRepository.create(item);
+
+    // Clone the item with the generated ID
+    Item createdItem = new Item(
+      itemId,
+      item.getName(),
+      item.getDescription(),
+      item.getPrice()
+    );
+
+    // Cache the data with the default TTL
+    String idString = Long.toString(itemId);
+    jedis.set(idString, createdItem.toJSONObject().toString());
+    jedis.expire(idString, DEFAULT_TTL);
+
+    return itemId;
+  }
+```
+
+### Reading from the Cache (Retrieving Values)
+
+```java
+public Item get(long id) {
+    String idString = Long.toString(id);
+
+    // Check if the data exists in the cache first
+    if (jedis.exists(idString)) {
+      // If the data exists in the cache extend the TTL
+      jedis.expire(idString, DEFAULT_TTL);
+
+      // Return the cached data
+      Item cachedItem = Item.fromJSONString(jedis.get(idString));
+      cachedItem.setFromCache(true);
+      return cachedItem;
+    }
+
+    Optional<Item> item = itemsRepository.get(id);
+
+    if (item.isEmpty()) {
+      // If the data doesn't exist in the database, return null
+      return null;
+    }
+
+    // Cache result from the database with the default TTL
+    jedis.set(idString, item.get().toJSONObject().toString());
+    jedis.expire(idString, DEFAULT_TTL);
+
+    return item.get();
+  }
+```
+
+### Deleting from the Cache (Invalidating Entries)
+
+```java
+  public void delete(long id) {
+    // Delete the data from database
+    itemsRepository.delete(id);
+
+    // Also, delete the data from the cache if it exists
+    String idString = Long.toString(id);
+    if (jedis.exists(idString)) {
+      jedis.del(idString);
+    }
+  }
+```
+
+#### Time-to-Live (TTL)
+
+ValKey allows you to set a TTL for cached entries, ensuring automatic expiration and preventing stale data. You can specify the TTL during entry creation:
+
+```java
+    jedis.expire(idString, DEFAULT_TTL);
+```
+
 ## Steps to Build
 
 1. **Set Up Your Environment:**
