@@ -22,16 +22,16 @@ Caching has many advantages including but not limited to:
 
 ## ValKey Operations for Caching
 
-In this use-case we are goign to demonstrate how we can apply a Caching solution using Valkey for MemoryStore in `Java` using the Jedis client.
+This use-case demonstrates how to apply a Caching solution using Valkey for MemoryStore in `Java` using the Jedis client.
 
 ## Application Design
 
-In this application, we are going to create a Basic CRUD API that will enable users to retrieve, create and delete items in a database.
+This application will be based around a sasic CRUD API that will enable users to create, retrieve and delete items in a cache or database.
 
 The structure comprises of 3 distinct layers:
 
 **_API Layer_**: This is our Java based API which will define routes for each action.
-**Caching Layer**: Using Valkey for MemoryStore, this will a low latency approach for retrieving data that we have stored once it has retrieved from the database.
+**Caching Layer**: Using Valkey for MemoryStore, this will involve a low latency approach for retrieving data that has been stored once it has retrieved from the database.
 **Database Layer**: Our main datasource and source of truth. This Google Coud SQL database will store all of the items that have been creared.
 
 //Add Diagram of archesecture here
@@ -47,9 +47,9 @@ _create_: For creating new items.
 
 ### Creating a new application
 
-The first step is to initialize a brand new Spring Boot application. The [offical guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using Spring Initializer.
+The first step is to initialize a brand new Spring Boot application. The [offical guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
 
-1. We chosen `Maven` as the project type for this demonstration..
+1. Select `Maven` as the project type for this demonstration..
 2. Select Sprint Boot version 3.4.1
 3. Complete the appropriate metadata.
 4. Choose your preffered Packing for downloading
@@ -62,7 +62,7 @@ Next, ensure the following dependencies have been added to your POM.xml file.
 
 #### Jedis
 
-We will use this library to connect directly to the Memorystore for Valkey instance.
+Add the folowing snippet toconnect directly to the Memorystore for Valkey instance.
 
 ```xml
         <!-- Jedis: Redis Java Client -->
@@ -75,7 +75,7 @@ We will use this library to connect directly to the Memorystore for Valkey insta
 
 #### Jakarta
 
-To ensure that our api routes are correctly validated. Add the following to your POM.xml
+To ensure that our api routes are correctly validated. Add the following dependency:
 
 ```xml
    <!-- Add Validation support-->
@@ -88,9 +88,11 @@ To ensure that our api routes are correctly validated. Add the following to your
 
 ### Connecting our Service layer
 
-Next, we can set our API logic:
+Next, add the following to route logic to the API.
 
 ### Writing to the cache
+
+Adding an entry will add the new item to the database. Once created, the id return from the database will be updated to a new object with the entries attributes. This new object will be added to the Memorystore cach with the appropirate Time-to-live (TTL) value.
 
 ```java
 
@@ -122,6 +124,8 @@ public long create(Item item) {
 
 ### Reading from the Cache (Retrieving Values)
 
+This method demonstrates how to efficiently retrieve data using a caching layer (Memorystore) to improve performance. The function first checks the cache for the requested item and handles its time-to-live (TTL) appropriately. If the item is not found in the cache, it fetches the data from the database, caches it, and then returns the result.
+
 ```java
 /** Import the Jedis library */
 import redis.clients.jedis.Jedis;
@@ -141,10 +145,11 @@ public Item get(long id) {
       return cachedItem;
     }
 
-    Optional<Item> item = itemsRepository.get(id);
+   /** Search for the item in the database */
+   Optional<Item> item = itemsRepository.get(id);
 
+    /** Check if a record has been found, If the data doesn't exist in the database, return null */
     if (item.isEmpty()) {
-      // If the data doesn't exist in the database, return null
       return null;
     }
 
@@ -158,6 +163,8 @@ public Item get(long id) {
 
 ### Deleting from the Cache (Invalidating Entries)
 
+For deletions, an item is first removed the datbase. Foollowing this, a check is perfromed to see if this item exists in Memorystore. If an item does exist, the entry is invalidated in the cache to maintain data consistency.
+
 ```java
    /** Import the Jedis library */
    import redis.clients.jedis.Jedis;
@@ -169,7 +176,7 @@ public Item get(long id) {
       // Also, delete the data from the cache if it exists
       String idString = Long.toString(id);
       if (jedis.exists(idString)) {
-      jedis.del(idString);
+        jedis.del(idString);
       }
    }
 ```
