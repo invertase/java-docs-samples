@@ -165,62 +165,6 @@ public Item get(long id) {
    }
 ```
 
-## Steps to Build
-
-1. **Set Up Your Environment:**
-   To get started, we will need to install Docker and ensure that we have a project set up in GCP with the required APIs enabled.
-
-   ### Install Docker on your local machine
-
-   - [Docker](https://www.docker.com)
-   - [Docker Compose](https://docs.docker.com/compose/)
-
-   ### Setting up your GCP Project
-
-   - **GCP Project**: Use an existing project, alternatively you can set up a new project through the [GCP console](https://console.cloud.google.com/welcome).
-   - **Enable Cloud Run API**: Enable the [Cloud Run API](https://console.cloud.google.com/apis/api/run.googleapis.com/metrics?inv=1&invt=AbnBKQ).
-   - **Enable Memorystore API**: Enable the [Memorystore API](https://console.cloud.google.com/marketplace/product/google/memorystore.googleapis.com).
-   - **Cloud SQL API**: Enable the [Cloud SQL API](https://console.cloud.google.com/marketplace/product/google/sqladmin.googleapis.com).
-
-2. **Download the Example Code:**
-   Instead of writing all the code from scratch, we’ve prepared a working demo repository that you can clone and explore. This contains everything you need including Spring Boot configuration, caching logic, Dockerfiles, and Terraform scripts for deployment.
-
-   You can download the code from the [Google Cloud Platform repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/cache).
-
-3. **Run Locally with Docker Compose:**
-   Use Docker Compose to start PostgreSQL, Valkey, and your Spring Boot app together. You’ll have a fully functional local environment that demonstrates how caching accelerates data retrieval.
-
-   Simply run:
-
-   ```bash
-   docker compose up --build
-   ```
-
-   Once started, you can make `GET`, `POST`, and `DELETE` requests to the REST endpoints to store, retrieve, and invalidate cached data. Check the repository’s README for example commands and endpoints.
-
-4. **Deploying to GCP via Terraform (Optional):**
-
-Terraform is an Infrastructure as Code (IaC) tool that allows you to define and provision cloud resources in a repeatable, automated way.
-
-If you haven't installed Terraform yet, you can download it by following the guides from [HashiCorp](https://developer.hashicorp.com/terraform/tutorials/gcp-get-started).
-
-With Terraform, you can provision:
-
-- **Cloud Run:** Runs your containerized Spring Boot application in a fully managed, serverless environment.
-- **Cloud SQL for PostgreSQL:** Provides a fully managed PostgreSQL instance.
-- **Memorystore (Valkey):** A fully managed Redis-compatible cache.
-
-  Adjust the Terraform variables for your project, initialize Terraform, and apply the configuration. Once deployed, set up environment variables in Cloud Run to point to the appropriate instances.
-
-  Visit the repository’s Terraform directory for detailed instructions and run:
-
-  ```bash
-  terraform init
-  terraform apply
-  ```
-
-  After Terraform has deployed your infrastructure, you’ll have a production-ready caching architecture running in the cloud.
-
 ## Scaling and Optimization
 
 As traffic increases, the architecture can scale horizontally:

@@ -36,38 +36,101 @@ The structure comprises of 3 distinct layers:
 
 //Add Diagram of archesecture here
 
+## Step-by-step Guide
+
+To begin, we are will generate an API with the following routes:
+
+_create_: For creating new items.
+_delete_: For creating deleting items.
+_create_: For creating new items.
+_create_: For creating new items.
+
+### Creating a new application
+
+The first step is to initialize a brand new Spring Boot application. The [offical guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using Spring Initializer.
+
+1. We chosen `Maven` as the project type for this demonstration..
+2. Select Sprint Boot version 3.4.1
+3. Complete the appropriate metadata.
+4. Choose your preffered Packing for downloading
+5. Select `Java 17` for your Java version.
+6. Finally, generate and extract the files.
+
+### Installing additional dependencies
+
+Next, ensure the following dependencies have been added to your POM.xml file.
+
+#### Jedis
+
+We will use this library to connect directly to the Memorystore for Valkey instance.
+
+```xml
+        <!-- Jedis: Redis Java Client -->
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>4.3.0</version> <!-- Use the latest version -->
+        </dependency>
+```
+
+#### Jakarta
+
+To ensure that our api routes are correctly validated. Add the following to your POM.xml
+
+```xml
+   <!-- Add Validation support-->
+   <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <version>3.0.2</version>
+   </dependency>
+```
+
+### Connecting our Service layer
+
+Next, we can set our API logic:
+
 ### Writing to the cache
 
 ```java
+
+/** Import the Jedis library */
 import redis.clients.jedis.Jedis;
-  public long create(Item item) {
-    // Create the data in the database
-    long itemId = itemsRepository.create(item);
 
-    // Clone the item with the generated ID
-    Item createdItem = new Item(
-      itemId,
-      item.getName(),
-      item.getDescription(),
-      item.getPrice()
-    );
+/** Creating an item with Time-to-live (TTL) */
+public long create(Item item) {
+   /** Save the item in the database */
+   long itemId = itemsRepository.create(item);
 
-    // Cache the data with the default TTL
-    String idString = Long.toString(itemId);
-    jedis.set(idString, createdItem.toJSONObject().toString());
-    jedis.expire(idString, DEFAULT_TTL);
+   /** Create a new object with the saved database id */
+   Item createdItem = new Item(
+   itemId,
+   item.getName(),
+   item.getDescription(),
+   item.getPrice()
+   );
 
-    return itemId;
-  }
+   /** Cache the data in Memorystore for valkey with the Time-to-live value **/
+   String idString = Long.toString(itemId);
+   jedis.set(idString, createdItem.toJSONObject().toString());
+   jedis.expire(idString, DEFAULT_TTL);
+
+   /** Return the item id */
+   return itemId;
+}
 ```
 
 ### Reading from the Cache (Retrieving Values)
 
 ```java
+/** Import the Jedis library */
+import redis.clients.jedis.Jedis;
+
 public Item get(long id) {
+   /** Ensure that the item id is a string for retirval from Memorystore */
     String idString = Long.toString(id);
 
-    // Check if the data exists in the cache first
+    /* Check if the item exists in  the cache */
     if (jedis.exists(idString)) {
       // If the data exists in the cache extend the TTL
       jedis.expire(idString, DEFAULT_TTL);
@@ -96,24 +159,19 @@ public Item get(long id) {
 ### Deleting from the Cache (Invalidating Entries)
 
 ```java
-  public void delete(long id) {
-    // Delete the data from database
-    itemsRepository.delete(id);
+   /** Import the Jedis library */
+   import redis.clients.jedis.Jedis;
 
-    // Also, delete the data from the cache if it exists
-    String idString = Long.toString(id);
-    if (jedis.exists(idString)) {
+   public void delete(long id) {
+      // Delete the data from database
+      itemsRepository.delete(id);
+
+      // Also, delete the data from the cache if it exists
+      String idString = Long.toString(id);
+      if (jedis.exists(idString)) {
       jedis.del(idString);
-    }
-  }
-```
-
-#### Time-to-Live (TTL)
-
-ValKey allows you to set a TTL for cached entries, ensuring automatic expiration and preventing stale data. You can specify the TTL during entry creation:
-
-```java
-    jedis.expire(idString, DEFAULT_TTL);
+      }
+   }
 ```
 
 ## Conclusion
