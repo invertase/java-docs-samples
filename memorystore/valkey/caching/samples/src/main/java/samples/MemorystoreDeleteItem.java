@@ -1,18 +1,15 @@
 /**
  * This code snippet is part of a tutorial on how to use Memorystore for Valkey.
  *
- * See https://cloud.google.com/memorystore/docs/valkey/create-instances
- * before running the code snippet.
+ * <p>See https://cloud.google.com/memorystore/docs/valkey/create-instances before running the code
+ * snippet.
  *
- * Prerequisites:
- * 1. A running Memorystore for Valkey instance in Google Cloud.
- * 2. Your client must run in the same VPC network as the Memorystore instance.
+ * <p>Prerequisites: 1. A running Memorystore for Valkey instance in Google Cloud. 2. Your client
+ * must run in the same VPC network as the Memorystore instance.
  *
- * Replace "INSTANCE_ID" with the private IP of your Memorystore instance.
- * Replace "ITEM_ID" with the key to be deleted from the cache.
- *
+ * <p>Replace "INSTANCE_ID" with the private IP of your Memorystore instance. Replace "ITEM_ID" with
+ * the key to be deleted from the cache.
  */
-
 import redis.clients.jedis.Jedis;
 
 public class MemorystoreDeleteItem {

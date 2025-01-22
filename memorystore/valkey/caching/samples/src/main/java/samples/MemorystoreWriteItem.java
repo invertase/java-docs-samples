@@ -1,17 +1,14 @@
 /**
  * This code snippet is part of a tutorial on how to use Memorystore for Redis.
  *
- * See https://cloud.google.com/memorystore/docs/valkey/create-instances
- * before running the code snippet.
+ * <p>See https://cloud.google.com/memorystore/docs/valkey/create-instances before running the code
+ * snippet.
  *
- * Prerequisites:
- * 1. A running Memorystore for Redis instance in Google Cloud.
+ * <p>Prerequisites: 1. A running Memorystore for Redis instance in Google Cloud.
  *
- * Replace "INSTANCE_ID" with the private IP of your Memorystore instance.
- * Replace "ITEM_ID" and "ITEM_VALUE" with the key and value to be cached.
- *
+ * <p>Replace "INSTANCE_ID" with the private IP of your Memorystore instance. Replace "ITEM_ID" and
+ * "ITEM_VALUE" with the key and value to be cached.
  */
-
 import redis.clients.jedis.Jedis;
 
 public class MemorystoreWriteItem {
@@ -28,9 +25,7 @@ public class MemorystoreWriteItem {
     jedis.set(itemId, itemValue);
 
     /** Print out the cached result */
-    System.out.println(
-      "Item cached with ID: " + itemId + " and value: " + itemValue
-    );
+    System.out.println("Item cached with ID: " + itemId + " and value: " + itemValue);
 
     /** Close the connection */
     jedis.close();

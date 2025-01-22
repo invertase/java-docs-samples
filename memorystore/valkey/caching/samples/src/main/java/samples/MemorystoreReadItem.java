@@ -1,19 +1,16 @@
 /**
  * This code snippet demonstrates how to read an item from Google Cloud Memorystore for Redis.
  *
- * See https://cloud.google.com/memorystore/docs/valkey/create-instances
- * before running the code snippet.
+ * <p>See https://cloud.google.com/memorystore/docs/valkey/create-instances before running the code
+ * snippet.
  *
- * Prerequisites:
- * 1. A running Memorystore for Redis instance in Google Cloud.
- * 2. An item already cached in the Redis instance with a known ID.
+ * <p>Prerequisites: 1. A running Memorystore for Redis instance in Google Cloud. 2. An item already
+ * cached in the Redis instance with a known ID.
  *
- * Replace "INSTANCE_ID" with the private IP of your Memorystore instance.
- * Replace "ITEM_ID" with an actual cached item ID.
+ * <p>Replace "INSTANCE_ID" with the private IP of your Memorystore instance. Replace "ITEM_ID" with
+ * an actual cached item ID.
  */
-
 import redis.clients.jedis.Jedis;
-import redis.clients.jedis.exceptions.JedisConnectionException;
 
 public class MemorystoreReadItem {
 
@@ -21,7 +18,7 @@ public class MemorystoreReadItem {
     /** Connect to your Memorystore for Valkey instance */
     Jedis jedis = new Jedis("127.0.0.1", 6379);
 
-    /**  Replace with an actual cached item ID */
+    /** Replace with an actual cached item ID */
     String itemId = "foo";
 
     /** Read the cached item */
