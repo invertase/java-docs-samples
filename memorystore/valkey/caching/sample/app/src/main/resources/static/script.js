@@ -84,7 +84,6 @@ function clearInputFields() {
 
 /** Set Response */
 function setResponse({ type, data }) {
-  console.log("Response:", type, data);
   /** Set success message */
   if (type === "success") {
     successMsg.style.display = "block";
