@@ -81,26 +81,95 @@ This enables the use of annotations like `@NotNull` and `@Size` on classes to au
 
 Next, add the following to route logic to the API.
 
-#### Creating a session item
-
-Adding an entry will add the new item to the database. Once created, the ID return from the database will be updated to a new object with the entries attributes. This new object will be added to the Memorystore cache with the appropriate Time-to-live (TTL) value.
+#### Logging in a user
 
 ```java
-// Code snippet
+  public String login(String username, String password) {
+    // Authenticate user
+    Optional<Integer> userId = accountRepository.authenticateUser(
+      username,
+      password
+    );
+
+    // No user found
+    if (userId.isEmpty()) {
+      return null;
+    }
+
+    // Generate token for the user
+    String token = Utils.generateToken(Global.TOKEN_BYTE_LENGTH);
+
+    try {
+      jedis.set(token, username);
+      jedis.expire(token, Global.TOKEN_EXPIRATION);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to store session token", e);
+    }
+```
+
+### Logging out a user
+
+```java
+public void logout(String token) {
+    try {
+      jedis.del(token);
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to delete session token", e);
+    }
+  }
+```
+
+#### Adding to the shopping basket
+
+```java
+@PostMapping
+  public ResponseEntity<String> update(
+    @RequestBody(required = false) String items,
+    HttpServletRequest request
+  ) {
+    // Prevent the basket from getting too large to prevent abuse
+    if (items != null && items.length() > 1000) {
+      return ResponseEntity.badRequest().body("Basket too large");
+    }
+
+    String token = Utils.getTokenFromCookie(request.getCookies());
+    jedis.set("basket-" + token, items == null ? "" : items);
+    return ResponseEntity.ok("Basket updated");
+  }
+```
+
+#### Reading a the shopping basket (Retrieving Values)
+
+```java
+  @GetMapping
+  public ResponseEntity<String> get(HttpServletRequest request) {
+    String token = Utils.getTokenFromCookie(request.getCookies());
+    return ResponseEntity.ok(jedis.get("basket-" + token));
+  }
 
 ```
 
-#### Reading a Session item (Retrieving Values)
+#### Verifiying a user token
 
 ```java
-// code snippet
+  public String verify(String token) {
+    try {
+      // Retrieve username from Valkey
+      String username = jedis.get(token);
 
-```
+      // No username found for the token
+      if (username == null) {
+        return null;
+      }
 
-#### Deleting a session item (Invalidating Entries)
+      // Extend token expiration
+      jedis.expire(token, Global.TOKEN_EXPIRATION);
 
-```java
-// Code Snippet
+      return username;
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to verify session token", e);
+    }
+  }
 
 ```
 
