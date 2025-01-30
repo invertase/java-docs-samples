@@ -9,7 +9,8 @@
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR IMPLIED WARRANTIES OF ANY KIND, either express or implied.
+ * WITHOUT WARRANTIES OR IMPLIED WARRANTIES OF ANY KIND, either express
+ * or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
@@ -25,7 +26,7 @@ public final class MemorystoreClearBasket {
     /** Replace the Memorystore port, if not the default port. */
     private static final int PORT = 6379;
 
-    /** User ID for managing the basket */
+    /** User ID for managing the basket. */
     private static final String USER_ID = "USERID";
 
     private MemorystoreClearBasket() {
@@ -49,12 +50,15 @@ public final class MemorystoreClearBasket {
 
             // Verify if the basket was cleared
             if (deleted > 0) {
-                System.out.printf("Basket cleared successfully for user: %s%n", USER_ID);
+                System.out.printf(
+                        "Basket cleared successfully for user: %s%n",
+                        USER_ID);
             } else {
                 System.out.printf("No basket found for user: %s%n", USER_ID);
             }
         } catch (Exception e) {
-            System.err.printf("Error connecting to Redis: %s%n", e.getMessage());
+            String message = e.getMessage();
+            System.err.printf("Error connecting to Redis: %s%n", message);
         }
     }
 }
