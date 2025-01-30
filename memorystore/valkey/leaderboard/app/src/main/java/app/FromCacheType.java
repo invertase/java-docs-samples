@@ -1,17 +1,16 @@
 package app;
 
 public enum FromCacheType {
-  FROM_DB(0),
-  PARTIAL_CACHE(1),
-  FULL_CACHE(2);
+    FROM_DB(0),
+    FULL_CACHE(1);
 
-  private int value;
+    private int value;
 
-  FromCacheType(int value) {
-    this.value = value;
-  }
+    FromCacheType(int value) {
+        this.value = value;
+    }
 
-  public int getValue() {
-    return value;
-  }
+    public int getValue() {
+        return value;
+    }
 }

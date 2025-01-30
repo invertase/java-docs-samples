@@ -1,103 +1,157 @@
 const PAGE_SIZE = 25;
+let currentPage = 0;
+let isLoading = false;
+let leaderboardData = [];
 
-document.addEventListener("DOMContentLoaded", () => {
-  let isLoading = true;
-  let position = 0;
-  let leaderboard = [];
-  let page = 0;
-  const fromCache = document.getElementById("from-cache");
-  const timeToFetch = document.getElementById("time-to-fetch");
+// Central DOM reference object for easier maintenance
+const elements = {
+  entriesContainer: document.getElementById("entries-container"),
+  filter: document.getElementById("filter"),
+  search: document.getElementById("search"),
+  prevPage: document.getElementById("prev-page"),
+  nextPage: document.getElementById("next-page"),
+  pageNumber: document.getElementById("page-number"),
+  usernameInput: document.getElementById("username-input"),
+  scoreInput: document.getElementById("score-input"),
+  addEntry: document.getElementById("add-entry"),
+  fromCache: document.getElementById("from-cache"),
+  timeToFetch: document.getElementById("time-to-fetch"),
+};
 
-  function setTiming(inFromCache, inTimeToFetch) {
-    // Update from-cache and time-to-fetch text
-    fromCache.textContent = inFromCache ? "yes" : "no";
-    switch (inFromCache) {
-      case 0:
-        fromCache.textContent = "no";
-        break;
-      case 1:
-        fromCache.textContent = "partial";
-        break;
-      case 2:
-        fromCache.textContent = "yes";
-        break;
+// Event Listeners
+elements.filter.addEventListener("change", () => refreshLeaderboard());
+elements.search.addEventListener("input", () => refreshLeaderboard());
+elements.prevPage.addEventListener("click", previousPage);
+elements.nextPage.addEventListener("click", nextPage);
+elements.addEntry.addEventListener("click", addEntry);
+
+async function fetchLeaderboard() {
+  isLoading = true;
+  const startTime = Date.now();
+
+  try {
+    // URLSearchParams automatically encodes URL parameters
+    const params = new URLSearchParams({
+      position: currentPage * PAGE_SIZE,
+      size: PAGE_SIZE,
+      orderBy: elements.filter.value,
+    });
+
+    if (elements.search.value) {
+      params.append("username", elements.search.value);
     }
-    timeToFetch.textContent = isNaN(inTimeToFetch)
-      ? "N/A"
-      : inTimeToFetch + "ms";
+
+    const response = await fetch(`/api/leaderboard?${params}`);
+    const data = await response.json();
+
+    updateAnalytics(data.fromCache, Date.now() - startTime);
+    return data;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return { entries: [] };
+  } finally {
+    isLoading = false;
+  }
+}
+
+function updateAnalytics(cacheStatus, duration) {
+  // Ternary chain for cache status text
+  elements.fromCache.textContent = cacheStatus ? "Yes" : "No";
+  elements.timeToFetch.textContent = duration ? `${duration}ms` : "-";
+}
+
+async function refreshLeaderboard() {
+  currentPage = 0;
+  updatePagination();
+  const data = await fetchLeaderboard();
+  leaderboardData = data.entries;
+  renderEntries();
+}
+
+function renderEntries() {
+  elements.entriesContainer.innerHTML = isLoading
+    ? loadingTemplate()
+    : leaderboardData.length
+      ? entriesTemplate()
+      : emptyTemplate();
+}
+
+function loadingTemplate() {
+  return `<div class="text-center py-8 text-gray-500">Loading entries...</div>`;
+}
+
+function emptyTemplate() {
+  return `<div class="text-center py-8 text-gray-500">No entries found</div>`;
+}
+
+// Template functions separate markup generation
+function entriesTemplate() {
+  return `
+    <ul class="divide-y">
+      ${leaderboardData
+        .map(
+          (entry) => `
+        <li class="py-3 hover:bg-gray-50">
+          <div class="flex justify-between items-center">
+            <span class="w-16">${entry.position}.</span>
+            <span class="flex-1">${entry.username}</span>
+            <span class="w-24 text-right font-mono text-blue-600">${entry.score}</span>
+          </div>
+        </li>
+      `,
+        )
+        .join("")}
+    </ul>
+  `;
+}
+
+async function addEntry() {
+  const username = elements.usernameInput.value.trim();
+  const score = parseInt(elements.scoreInput.value);
+
+  if (!username || isNaN(score)) {
+    alert("Please enter valid name and score");
+    return;
   }
 
-  function loadLeaderboard() {
-    isLoading = true;
-    render();
-    setTiming(false, null);
-    let msTaken = new Date().getTime();
+  try {
+    const response = await fetch("/api/leaderboard", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, score }),
+    });
 
-    fetch(`/api/leaderboard?position=${page * PAGE_SIZE}`)
-      .then((response) => {
-        msTaken = new Date().getTime() - msTaken;
-
-        return response.json();
-      })
-      .then((data) => {
-        position = data.position;
-        leaderboard = data.entries;
-
-        setTiming(data.fromCache, msTaken);
-      })
-      .finally(() => {
-        isLoading = false;
-        render();
-      });
-  }
-
-  function setPageNumber() {
-    const pageNumber = document.getElementById("page-number");
-    pageNumber.innerText = page + 1;
-  }
-
-  function upPage() {
-    page += 1;
-    setPageNumber();
-    loadLeaderboard();
-  }
-
-  function downPage() {
-    if (page > 0) {
-      page -= 1;
-      setPageNumber();
-      loadLeaderboard();
+    if (response.ok) {
+      elements.usernameInput.value = "";
+      elements.scoreInput.value = "";
+      refreshLeaderboard();
     }
+  } catch (error) {
+    console.error("Submission error:", error);
   }
+}
 
-  function render() {
-    const app = document.getElementById("listings-container");
-    app.innerHTML = `
-      <ul class="relative w-full list-none p-0 m-0">
-        ${
-          isLoading
-            ? `<p class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl">Loading...</p>`
-            : leaderboard.length > 0
-              ? leaderboard
-                  .map(
-                    (entry, index) => `
-              <li class="flex items-center justify-center w-full bg-gray-100 text-lg mb-2">
-                <div class="w-[600px] max-w-[80%] flex justify-between items-center h-24">
-                  <b>${position + index + 1}.</b>
-                  <span>${entry.username}</span>
-                  <span class="text-yellow-600">(${entry.score})</span>
-                </div>
-              </li>
-            `,
-                  )
-                  .join("")
-              : `<p class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl">No entries found</p>`
-        }
-      </ul>
-    `;
-  }
+function updatePagination() {
+  elements.pageNumber.textContent = currentPage + 1;
+  elements.prevPage.disabled = currentPage === 0;
+}
 
-  window.upPage = upPage;
-  window.downPage = downPage;
-  loadLeaderboard();
-});
+async function nextPage() {
+  currentPage++;
+  await loadPage();
+}
+
+async function previousPage() {
+  currentPage = Math.max(0, currentPage - 1);
+  await loadPage();
+}
+
+async function loadPage() {
+  const data = await fetchLeaderboard();
+  leaderboardData = data.entries;
+  updatePagination();
+  renderEntries();
+}
+
+// Initial load
+refreshLeaderboard();

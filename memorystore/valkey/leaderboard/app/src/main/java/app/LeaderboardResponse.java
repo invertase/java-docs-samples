@@ -5,22 +5,12 @@ import org.json.JSONObject;
 
 public class LeaderboardResponse {
 
-  private Long position;
   private List<LeaderboardEntry> entries;
   private int fromCache;
 
-  public LeaderboardResponse(
-    Long position,
-    List<LeaderboardEntry> entries,
-    int fromCache
-  ) {
-    this.position = position;
+  public LeaderboardResponse(List<LeaderboardEntry> entries, int fromCache) {
     this.entries = entries;
     this.fromCache = fromCache;
-  }
-
-  public Long getPosition() {
-    return position;
   }
 
   public List<LeaderboardEntry> getEntries() {
@@ -33,7 +23,6 @@ public class LeaderboardResponse {
 
   public JSONObject toJson() {
     JSONObject json = new JSONObject();
-    json.put("position", position);
     json.put("entries", entries);
     json.put("fromCache", fromCache);
     return json;

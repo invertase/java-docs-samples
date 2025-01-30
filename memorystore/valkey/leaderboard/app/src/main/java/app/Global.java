@@ -1,10 +1,8 @@
-/**
- * Global constants for the application.
- */
-
+/** Global constants for the application. */
 package app;
 
 public class Global {
 
-  public static final String LEADERBOARD_VALKEY_KEY = "leaderboard";
+    // Add a global constant for the leaderboard entries key
+    public static final String LEADERBOARD_ENTRIES_KEY = "entries";
 }

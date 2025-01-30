@@ -1,155 +1,110 @@
-/**
- * Responsible for handling the data operations between the API, Valkey, and the database.
- */
-
 package app;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import org.springframework.stereotype.Controller;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.resps.Tuple;
+
+import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class DataController {
 
-  private final LeaderboardRepository leaderboardRepository;
-  private final Jedis jedis;
+    private final LeaderboardRepository leaderboardRepository;
+    private final Jedis jedis;
 
-  public Integer cacheTopN;
-  public Integer pageSize;
-
-  public DataController(
-    LeaderboardRepository leaderboardRepository,
-    Jedis jedis
-  ) {
-    this.leaderboardRepository = leaderboardRepository;
-    this.jedis = jedis;
-
-    this.cacheTopN = Objects.requireNonNullElse(cacheTopN, 100);
-    this.pageSize = Objects.requireNonNullElse(pageSize, 25);
-  }
-
-  public LeaderboardResponse getAt(long position) {
-    // If the requested position is beyond the cache’s topN,
-    // skip the cache entirely and use the database.
-    if (position >= cacheTopN) {
-      return new LeaderboardResponse(
-        position,
-        leaderboardRepository.getEntriesAt(position, pageSize),
-        FromCacheType.FROM_DB.getValue()
-      );
+    public DataController(Jedis jedis, LeaderboardRepository leaderboardRepository) {
+        this.leaderboardRepository = leaderboardRepository;
+        this.jedis = jedis;
     }
 
-    FromCacheType fromCacheType = FromCacheType.FULL_CACHE;
+    /**
+     * Get the leaderboard entries starting from the given position.
+     *
+     * @param position The starting position of the entries to search.
+     * @param orderBy The order of the entries.
+     * @param pageSize The number of entries to return.
+     * @param username The username to check the rank of.
+     * @return The leaderboard entries.
+     */
+    public LeaderboardResponse getLeaderboard(
+            long position, OrderByType orderBy, long pageSize, String username) {
+        String cacheKey = Global.LEADERBOARD_ENTRIES_KEY;
+        long maxPosition = position + pageSize - 1;
 
-    // If the cache is incomplete (i.e. has fewer than cacheTopN items),
-    // top it up from DB before we do any retrieval.
-    long numEntriesInCache = jedis.zcard(Global.LEADERBOARD_VALKEY_KEY);
-    if (numEntriesInCache < cacheTopN) {
-      List<LeaderboardEntry> missingEntries =
-        leaderboardRepository.getEntriesAt(
-          numEntriesInCache,
-          cacheTopN - numEntriesInCache
-        );
+        // Initialize the cache if it's empty
+        boolean cacheUpdated = this.initializeCache();
 
-      // Add the new entries to Redis so we have a full topN in cache.
-      for (LeaderboardEntry entry : missingEntries) {
-        jedis.zadd(
-          Global.LEADERBOARD_VALKEY_KEY,
-          entry.getScore(),
-          entry.getUsername()
-        );
-      }
+        // Set the cache status for the front end
+        int cacheStatus =
+                cacheUpdated
+                        ? FromCacheType.FROM_DB.getValue()
+                        : FromCacheType.FULL_CACHE.getValue();
 
-      fromCacheType = FromCacheType.PARTIAL_CACHE;
+        // If we have a username, search for the user's rank
+        if (username != null) {
+            Long userRank = jedis.zrevrank(cacheKey, username);
+            if (userRank != null) {
+                position = userRank;
+                maxPosition = userRank + pageSize - 1;
+
+                return new LeaderboardResponse(
+                        getEntries(cacheKey, position, maxPosition, true), cacheStatus);
+            }
+        }
+
+        // Get the leaderboard entries depending on the order
+        List<LeaderboardEntry> leaderboardList =
+                getEntries(cacheKey, position, maxPosition, orderBy == OrderByType.HIGH_TO_LOW);
+
+        return new LeaderboardResponse(leaderboardList, cacheStatus);
     }
 
-    // Now fetch from cache if possible.
-    List<LeaderboardEntry> leaderboardList = new ArrayList<>();
+    private List<LeaderboardEntry> getEntries(
+            String cacheKey, long position, long maxPosition, boolean isDescending) {
+        // Define an object
+        List<Tuple> entries = new ArrayList<>();
 
-    // The maximum number of cached entries we *intend* to pull
-    // is whichever is smaller: "distance to top of cache" or "pageSize".
-    long distance = cacheTopN - position;
-    long intendedCachedCount = Math.min(distance, pageSize);
+        // Use zrevrangeWithScores to get the entries in descending order
+        if (isDescending) {
+            entries = new ArrayList<>(jedis.zrevrangeWithScores(cacheKey, position, maxPosition));
+        }
 
-    // Ask Redis for the range [position, position + intendedCachedCount - 1].
-    List<Tuple> cachedEntries = jedis.zrevrangeWithScores(
-      Global.LEADERBOARD_VALKEY_KEY,
-      position,
-      position + intendedCachedCount - 1
-    );
+        // If zrangeWithScores is used, the entries are in ascending order
+        if (!isDescending) {
+            entries = new ArrayList<>(jedis.zrangeWithScores(cacheKey, position, maxPosition));
+        }
 
-    // Convert Redis tuples to LeaderboardEntry objects.
-    for (Tuple entry : cachedEntries) {
-      leaderboardList.add(
-        new LeaderboardEntry(entry.getElement(), entry.getScore())
-      );
+        List<LeaderboardEntry> newEntries = new ArrayList<>();
+        for (int i = 0; i < entries.size(); i++) {
+            Tuple e = entries.get(i);
+            newEntries.add(new LeaderboardEntry(e.getElement(), e.getScore(), position + i));
+        }
+
+        return newEntries;
     }
 
-    // If Redis returned fewer items than we *intended* to pull
-    // (or if intendedCachedCount < pageSize),
-    // we need to fetch from DB to complete this page.
-    long actualCachedCount = cachedEntries.size();
-    // The total we still need to fill out pageSize is:
-    long shortfall = pageSize - actualCachedCount;
+    private boolean initializeCache() {
+        if (this.jedis.zcard(Global.LEADERBOARD_ENTRIES_KEY) > 0) {
+            return false;
+        }
 
-    if (shortfall > 0) {
-      // The DB call starts from position + actualCachedCount,
-      // because we already got `actualCachedCount` from the cache.
-      List<LeaderboardEntry> dbEntries = leaderboardRepository.getEntriesAt(
-        position + actualCachedCount,
-        shortfall
-      );
-      leaderboardList.addAll(dbEntries);
+        List<LeaderboardEntry> entries = this.leaderboardRepository.getEntries();
+
+        if (!entries.isEmpty()) {
+            for (LeaderboardEntry entry : entries) {
+                this.jedis.zadd(
+                        Global.LEADERBOARD_ENTRIES_KEY, entry.getScore(), entry.getUsername());
+            }
+        }
+
+        return true;
     }
 
-    return new LeaderboardResponse(
-      position,
-      leaderboardList,
-      fromCacheType.getValue()
-    );
-  }
-
-  public void createOrUpdate(String username, Double score) {
-    if (jedis.zrank(Global.LEADERBOARD_VALKEY_KEY, username) != null) {
-      // The user is in the cache, update the score in the cache
-      jedis.zadd(Global.LEADERBOARD_VALKEY_KEY, score, username);
-      leaderboardRepository.update(username, score);
-
-      // Update the database
-      leaderboardRepository.update(username, score);
-    } else {
-      // Create or update the entry in the database
-      if (leaderboardRepository.exists(username)) {
-        leaderboardRepository.update(username, score);
-      } else {
-        leaderboardRepository.create(username, score);
-      }
-
-      // Get the lowest score in the cache
-      String lowestScoringUser = jedis
-        .zrange(Global.LEADERBOARD_VALKEY_KEY, cacheTopN - 1, cacheTopN - 1)
-        .get(0);
-      Double lowestScore = jedis.zscore(
-        Global.LEADERBOARD_VALKEY_KEY,
-        lowestScoringUser
-      );
-
-      // If the new score is higher than the lowest score in the cache, add it to the cache and remove the lowest score
-      if (score > lowestScore) {
-        jedis.zadd(Global.LEADERBOARD_VALKEY_KEY, score, username);
-        jedis.zrem(Global.LEADERBOARD_VALKEY_KEY, lowestScoringUser);
-      }
+    public void createOrUpdate(String username, Double score) {
+        this.leaderboardRepository.update(username, score);
+        this.jedis.zadd(Global.LEADERBOARD_ENTRIES_KEY, score, username);
     }
-  }
-
-  public Double getScore(String username) {
-    if (jedis.zrank(Global.LEADERBOARD_VALKEY_KEY, username) != null) {
-      return jedis.zscore(Global.LEADERBOARD_VALKEY_KEY, username);
-    }
-
-    return leaderboardRepository.getScore(username);
-  }
 }
