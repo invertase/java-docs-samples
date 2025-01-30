@@ -6,7 +6,7 @@ Leaderboards are a useful way to display ranking data in applications. This guid
 
 - **Performance:** Leaderboards store ranking data in memory, enabling near-instantaneous retrieval of scores and rankings, reducing the time required to query and sort data from the database.
 - **Scalability:** Cached leaderboards can handle a high volume of reads and writes, providing consistent update and response times.
-- **Database Efficiency** Caching frequently accessed leaderboard data minimizes the need for repetitive, and high volume database queries.
+- **Database Efficiency:** Caching frequently accessed leaderboard data minimizes the need for repetitive, and high volume database queries.
 
 ## What You’ll Build
 
@@ -14,7 +14,7 @@ You’ll set up a leaderboard service that:
 
 1. **Stores leaderboard data in PostgreSQL** for persistence and historical analysis.
 2. **Uses Valkey (Memorystore)** as an in-memory cache for updating scores and quick lookups.
-3. **Spring Boot Applications** Exposes RESTful APIs for adding scores, retrieving rankings, and filtering leaderboards.
+3. **Spring Boot Applications** to expose RESTful APIs for adding scores, retrieving rankings, and filtering leaderboards.
 4. **Deploys on Google Cloud Platform (GCP)** using services like Cloud Run, Cloud SQL, and Memorystore.
 
 By following this guide, you’ll implement a high-performing, scalable leaderboard system.
@@ -34,7 +34,7 @@ By following this guide, you’ll implement a high-performing, scalable leaderbo
 
 ## Step-by-Step Guide
 
-To begin, we are will generate an API with the following routes:
+To begin, generate an API with the following routes:
 
 _addScore_: Creates a new score.
 _getScores_: Returns the leaderboard rankings.
@@ -46,7 +46,7 @@ The first step is to initialize a brand new Spring Boot application. The [offici
 1. Choose `Maven` as the project type for this demonstration..
 2. Select Sprint Boot version 3.4.1
 3. Complete the appropriate metadata.
-4. Choose your preferred `Packing` for downloading.
+4. Choose your preferred `Packaging` for downloading.
 5. Select `Java 17` for your Java version.
 6. Finally, generate and extract the files.
 
