@@ -5,7 +5,7 @@ Leaderboards are a useful way to display ranking data in applications. This guid
 ## Benefits of a Cached Leaderboard
 
 - **Performance:** Leaderboards store ranking data in memory, enabling near-instantaneous retrieval of scores and rankings, reducing the time required to query and sort data from the database.
-- **Reduced Latency:** Handles thousands or millions of updates and queries with minimal latency.
+- **Scalability:** Cached leaderboards can handle a high volume of reads and writes, providing consistent update and response times.
 - **Database Efficiency** Caching frequently accessed leaderboard data minimizes the need for repetitive, and high volume database queries.
 
 ## What You’ll Build
@@ -17,7 +17,7 @@ You’ll set up a leaderboard service that:
 3. **Spring Boot Applications** Exposes RESTful APIs for adding scores, retrieving rankings, and filtering leaderboards.
 4. **Deploys on Google Cloud Platform (GCP)** using services like Cloud Run, Cloud SQL, and Memorystore.
 
-By following this guide, you’ll implement a scalable leaderboard system with low latency and quick performance.
+By following this guide, you’ll implement a high-performing, scalable leaderboard system.
 
 ## Architecture Overview
 
@@ -81,40 +81,72 @@ This dependency enables the use of annotations like `@NotNull` and `@Size` on cl
 </dependency>
 ```
 
-### Connecting the Service layer
+### Connecting the Service Layer
 
-Next, add the following to route logic to the API.
+Next, add the following to the routing logic in the API.
 
-#### Adding a new Score
+#### Initalizing the cache
+
+To ensure data is always availabe in the caching layer, a request is made to the database to update the cache if it is empty.
 
 ```java
-// Code snippet
+private boolean initializeCache() {
+   if (this.jedis.zcard(Global.LEADERBOARD_ENTRIES_KEY) > 0) {
+      return false;
+   }
+
+   List<LeaderboardEntry> entries = this.leaderboardRepository.getEntries();
+
+   if (!entries.isEmpty()) {
+      for (LeaderboardEntry entry : entries) {
+            this.jedis.zadd(
+                  Global.LEADERBOARD_ENTRIES_KEY, entry.getScore(), entry.getUsername());
+      }
+   }
+
+   return true;
+}
 
 ```
 
-#### Retrieving Rankings
-
-When reading entries from a Leaderboard, there are a number of ways to filter the resulting dataset:
-
-##### Default search
+#### Fetching the leaderboard with zrangeWithScores (Ascending)
 
 ```java
-// code snippet
-
+if (!isDescending) {
+   entries = new ArrayList<>(jedis.zrangeWithScores(cacheKey, position, maxPosition));
+}
 ```
 
-##### Using ZRANK to filter based on a username
+#### Fetching the leaderboard with zrevrangeWithScores (Descending)
 
 ```java
-// code snippet
-
+if (isDescending) {
+   entries = new ArrayList<>(jedis.zrevrangeWithScores(cacheKey, position, maxPosition));
+}
 ```
 
-##### Using ZREVRANGE to reveerse the order based on scores
+##### Fetching the leaderboard based on a user search using zrevrank
 
 ```java
-// code snippet
+if (username != null) {
+   Long userRank = jedis.zrevrank(cacheKey, username);
+   if (userRank != null) {
+         position = userRank;
+         maxPosition = userRank + pageSize - 1;
 
+         return new LeaderboardResponse(
+               getEntries(cacheKey, position, maxPosition, true), cacheStatus);
+   }
+}
+```
+
+##### Creating or updating a user score
+
+```java
+public void createOrUpdate(String username, Double score) {
+   this.leaderboardRepository.update(username, score);
+   this.jedis.zadd(Global.LEADERBOARD_ENTRIES_KEY, score, username);
+}
 ```
 
 ## Scaling and Optimization
@@ -129,6 +161,6 @@ You can fine-tune cache expiration strategies (TTL values) and eviction policies
 
 ## Conclusion
 
-By implementing this leaderboard system, you can easily display large amounts of sorted datasets, while also having the support to effectivly filter the data. Leveraging caching with Valkey (Memorystore) significantly reduces database load while maintaining fast and reliable user experiences. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
+By implementing this leaderboard system, you can easily display large amounts of sorted datasets, while also having the support to effectively filter the data. Leveraging caching with Valkey (Memorystore) significantly reduces database load while maintaining fast and reliable user experiences. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
 
 For more information check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/leaderboard) for the full project details and follow the instructions to get started.
