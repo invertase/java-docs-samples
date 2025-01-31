@@ -38,41 +38,29 @@ public class DataController {
     // Generate token for the user
     String token = Utils.generateToken(Global.TOKEN_BYTE_LENGTH);
 
-    try {
-      jedis.set(token, username);
-      jedis.expire(token, Global.TOKEN_EXPIRATION);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to store session token", e);
-    }
+    // Store token in Valkey
+    jedis.setex(token, Global.TOKEN_EXPIRATION, username);
 
     return token;
   }
 
   public void logout(String token) {
-    try {
-      jedis.del(token);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to delete session token", e);
-    }
+    jedis.del(token);
   }
 
   public String verify(String token) {
-    try {
-      // Retrieve username from Valkey
-      String username = jedis.get(token);
+    // Retrieve username from Valkey
+    String username = jedis.get(token);
 
-      // No username found for the token
-      if (username == null) {
-        return null;
-      }
-
-      // Extend token expiration
-      jedis.expire(token, Global.TOKEN_EXPIRATION);
-
-      return username;
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to verify session token", e);
+    // No username found for the token
+    if (username == null) {
+      return null;
     }
+
+    // Extend token expiration
+    jedis.expire(token, Global.TOKEN_EXPIRATION);
+
+    return username;
   }
 
   public boolean checkIfEmailExists(String email) {

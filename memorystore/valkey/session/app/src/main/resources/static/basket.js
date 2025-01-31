@@ -1,18 +1,4 @@
 let basket = {};
-window.items = [];
-
-// Load items from a JSON file or API
-async function loadItems() {
-  try {
-    const response = await fetch("/items.json");
-    if (!response.ok) {
-      throw new Error(`Failed to load items: ${response.statusText}`);
-    }
-    window.items = await response.json();
-  } catch (error) {
-    console.error("Error loading items:", error);
-  }
-}
 
 function fetchBasket() {
   fetch("http://localhost:8080/api/basket", {
@@ -28,17 +14,16 @@ function fetchBasket() {
       if (!response.ok) {
         throw new Error(`Failed to load basket: ${response.statusText}`);
       }
-      return response.text();
+      return response.json();
     })
     .then((data) => {
       if (!data) return;
+      console.log("Loaded basket:", data);
 
+      // returned data is a map
       basket = {};
-      // Convert string into object and update basket
-      const itemsArray = data.split(",");
-      itemsArray.forEach((item) => {
-        const [id, quantity] = item.split(":");
-        basket[id] = { id: parseInt(id), quantity: parseInt(quantity) };
+      Object.keys(data).forEach((key) => {
+        basket[key] = { id: parseInt(key), quantity: parseInt(data[key]) };
       });
 
       updateBasketDisplay();
@@ -49,44 +34,119 @@ function fetchBasket() {
     });
 }
 
-function saveBasket() {
-  const itemsArray = Object.values(basket);
+function requestAddItem(itemId, quantity) {
   let msTaken = new Date().getTime();
 
-  // Convert into string and send to the server, as such:
-  // "id:quanity,id:quantity,id:quantity", e.g. "1:2,2:1,3:1"
-  let itemsArrayString = "";
-  itemsArray.forEach((item) => {
-    itemsArrayString += `${item.id}:${item.quantity},`;
-  });
-  if (itemsArrayString.length > 0)
-    itemsArrayString = itemsArrayString.slice(0, -1);
-  console.log(itemsArrayString);
-
-  fetch("http://localhost:8080/api/basket", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "localhost:3000",
-      "Access-Control-Allow-Methods": "POST",
-      "Access-Control-Allow-Credentials": "true",
+  fetch(
+    "http://localhost:8080/api/basket/add?itemId=" +
+      itemId +
+      "&quantity=" +
+      quantity,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "localhost:3000",
+        "Access-Control-Allow-Methods": "POST",
+        "Access-Control-Allow-Credentials": "true",
+      },
     },
-    body: itemsArrayString,
-  })
+  )
     .then((response) => {
-      // Calculate time taken to save basket
       msTaken = new Date().getTime() - msTaken;
       document.getElementById("response-time").textContent = msTaken;
 
       if (!response.ok) {
-        throw new Error(`Failed to save basket: ${response.statusText}`);
+        throw new Error(`Failed to add item: ${response.statusText}`);
       }
-
       return response.text();
     })
+    .then(() => {
+      if (basket[itemId]) {
+        basket[itemId].quantity += quantity;
+      } else {
+        basket[itemId] = { id: itemId, quantity };
+      }
+
+      updateBasketDisplay();
+    })
     .catch((error) => {
-      console.error("Error saving basket:", error);
-      alert("Failed to save basket. Please try again later.");
+      console.error("Error adding item:", error);
+      alert("Failed to add item. Please try again later.");
+    });
+}
+
+function requestRemoveItem(itemId, quantity) {
+  let msTaken = new Date().getTime();
+
+  fetch(
+    "http://localhost:8080/api/basket/remove?itemId=" +
+      itemId +
+      "&quantity=" +
+      quantity,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "localhost:3000",
+        "Access-Control-Allow-Methods": "DELETE",
+        "Access-Control-Allow-Credentials": "true",
+      },
+    },
+  )
+    .then((response) => {
+      msTaken = new Date().getTime() - msTaken;
+      document.getElementById("response-time").textContent = msTaken;
+
+      if (!response.ok) {
+        throw new Error(`Failed to remove item: ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then(() => {
+      if (basket[itemId]) {
+        basket[itemId].quantity -= quantity;
+        if (basket[itemId].quantity <= 0) {
+          delete basket[itemId];
+        }
+      }
+
+      updateBasketDisplay();
+    })
+    .catch((error) => {
+      console.error("Error removing item:", error);
+      alert("Failed to remove item. Please try again later.");
+    });
+}
+
+function requestClearBasket() {
+  let msTaken = new Date().getTime();
+
+  fetch("http://localhost:8080/api/basket/clear", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "localhost:3000",
+      "Access-Control-Allow-Methods": "DELETE",
+      "Access-Control-Allow-Credentials": "true",
+    },
+  })
+    .then((response) => {
+      msTaken = new Date().getTime() - msTaken;
+      document.getElementById("response-time").textContent = msTaken;
+
+      if (!response.ok) {
+        throw new Error(`Failed to clear basket: ${response.statusText}`);
+      }
+      return response.text();
+    })
+    .then(() => {
+      basket = {};
+      updateBasketDisplay();
+    })
+    .catch((error) => {
+      console.error("Error clearing basket:", error);
+      alert("Failed to clear basket. Please try again later.");
     });
 }
 
@@ -97,38 +157,22 @@ function addToBasket(itemId) {
     return;
   }
 
-  const item = window.items.find((i) => i.id === itemId);
-  if (!item) return;
-
-  if (basket[itemId]) {
-    basket[itemId].quantity += 1;
-  } else {
-    basket[itemId] = { id: item.id, quantity: 1 };
-  }
-
-  saveBasket();
-  updateBasketDisplay();
+  requestAddItem(itemId, 1);
 }
 
 // Remove item from basket
 function removeFromBasket(itemId) {
-  if (basket[itemId]) {
-    basket[itemId].quantity -= 1;
-    if (basket[itemId].quantity <= 0) {
-      delete basket[itemId];
-    }
-
-    saveBasket();
-    updateBasketDisplay();
+  if (!window.items || window.items.length === 0) {
+    alert("Items are not loaded yet. Please try again later.");
+    return;
   }
+
+  requestRemoveItem(itemId, 1);
 }
 
 // Clear basket
 function clearBasket() {
-  basket = {};
-
-  saveBasket();
-  updateBasketDisplay();
+  requestClearBasket();
 }
 
 // Purchase items
@@ -174,13 +218,6 @@ function updateBasketDisplay() {
 
   basketTotal.textContent = `$${total.toFixed(2)}`;
 }
-
-// Load items on page load
-document.addEventListener("DOMContentLoaded", async () => {
-  await loadItems(); // Load items before user interactions
-  fetchBasket(); // Load the basket from the server
-  updateBasketDisplay(); // Initialize the basket display
-});
 
 // Expose functions globally for onclick handlers
 window.addToBasket = addToBasket;
