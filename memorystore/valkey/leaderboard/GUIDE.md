@@ -41,7 +41,7 @@ _getScores_: Returns the leaderboard rankings.
 
 ### Creating a new application
 
-The first step is to initialize a brand new Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
+The first step is to initialize a Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
 
 1. Choose `Maven` as the project type for this demonstration..
 2. Select Sprint Boot version 3.4.1
