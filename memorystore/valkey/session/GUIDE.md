@@ -28,7 +28,7 @@ By following this guide, you’ll implement a scalable and secure session manage
 
 ## Step-by-Step Guide
 
-To begin, we are will generate an API with the following routes:
+To begin, we will generate an API with the following routes:
 
 1. **Session Creation:** When a user logs in, a session is created and stored in the database cache with a Time-To-Live (TTL).
 2. **Session Retrieval:** For every request, the session is checked in the cache. If not found, it is retrieved from the database and re-cached.
@@ -40,19 +40,19 @@ To begin, we are will generate an API with the following routes:
 The first step is to initialize a Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
 
 1. Choose `Maven` as the project type for this demonstration.
-2. Select Sprint Boot version 3.4.1.
+2. Select Spring Boot version `3.4.1`.
 3. Complete the appropriate metadata.
-4. Choose your preferred `Packing` for downloading.
+4. Choose your preferred `Packaging` for downloading.
 5. Select `Java 17` for your Java version.
 6. Finally, generate and extract the files.
 
 #### Installing additional dependencies
 
-Next, ensure the following dependencies have been added to your POM.xml file.
+Next, ensure the following dependencies have been added to your POM.xml file:
 
 #### Jedis
 
-Add the folowing snippet toconnect directly to the Memorystore for Valkey instance.
+Add the following snippet to connect directly to the Memorystore for Valkey instance.
 
 ```xml
 <!-- Jedis: Redis Java Client -->
@@ -65,11 +65,10 @@ Add the folowing snippet toconnect directly to the Memorystore for Valkey instan
 
 #### Jakarta
 
-To ensure that our API routes are correctly validated. Add the following dependency.
-This enables the use of annotations like `@NotNull` and `@Size` on classes to automatically enforce input constraints, reducing the need for manual validation logic.
+To enable the use of annotations like `@NotNull` and `@Size` for input validation, add the following dependency to your project:
 
 ```xml
-<!-- Add Validation support-->
+<!-- Add validation support-->
 <dependency>
    <groupId>jakarta.validation</groupId>
    <artifactId>jakarta.validation-api</artifactId>
@@ -77,9 +76,9 @@ This enables the use of annotations like `@NotNull` and `@Size` on classes to au
 </dependency>
 ```
 
-### Connecting the Service layer
+### Connecting the Service Layer
 
-Next, add the following to route logic to the API.
+Next, add the following to the route logic in the API.
 
 #### Logging in a user
 
@@ -105,12 +104,13 @@ Next, add the following to route logic to the API.
     } catch (Exception e) {
       throw new RuntimeException("Failed to store session token", e);
     }
+  }
 ```
 
 ### Logging out a user
 
 ```java
-public void logout(String token) {
+  public void logout(String token) {
     try {
       jedis.del(token);
     } catch (Exception e) {
@@ -163,7 +163,6 @@ public void logout(String token) {
     }
     return ResponseEntity.ok("Quantity updated: " + newQty);
   }
-
 ```
 
 #### Clearing the shopping basket
