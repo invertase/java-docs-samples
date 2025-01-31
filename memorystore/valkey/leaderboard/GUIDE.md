@@ -6,7 +6,7 @@ Leaderboards are a useful way to display ranking data in applications. This guid
 
 - **Performance:** Leaderboards store ranking data in memory, enabling near-instantaneous retrieval of scores and rankings, reducing the time required to query and sort data from the database.
 - **Scalability:** Cached leaderboards can handle a high volume of reads and writes, providing consistent update and response times.
-- **Database Efficiency:** Caching frequently accessed leaderboard data minimizes the need for repetitive, and high volume database queries.
+- **Database Efficiency:** Caching frequently accessed leaderboard data minimizes the need for repetitive and high volume database queries.
 
 ## What You’ll Build
 
@@ -29,7 +29,7 @@ By following this guide, you’ll implement a high-performing, scalable leaderbo
 ## Leaderboard Workflow
 
 1. **Score Submission:** A user submits a score, which is added to the cache and database.
-2. **Rank Retrieval:** By default rankings are returned, displaying data ordered by the highest scores.
+2. **Rank Retrieval:** By default, rankings are returned, displaying data ordered by the highest scores.
 3. **Rank Retrieval (Filtered):** Rankings are displayed based on any applied filters.
 
 ## Step-by-Step Guide
@@ -43,8 +43,8 @@ _getScores_: Returns the leaderboard rankings.
 
 The first step is to initialize a Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
 
-1. Choose `Maven` as the project type for this demonstration..
-2. Select Sprint Boot version 3.4.1
+1. Choose `Maven` as the project type for this demonstration.
+2. Select Spring Boot version `3.4.1`.
 3. Complete the appropriate metadata.
 4. Choose your preferred `Packaging` for downloading.
 5. Select `Java 17` for your Java version.
@@ -52,11 +52,11 @@ The first step is to initialize a Spring Boot application. The [official guide](
 
 ### Installing additional dependencies
 
-Next, ensure the following dependencies have been added to your POM.xml file.
+Next, ensure the following dependencies have been added to your POM.xml file:
 
 #### Jedis
 
-Add the folowing snippet toconnect directly to the Memorystore for Valkey instance.
+Add the following snippet to connect directly to the Memorystore for Valkey instance.
 
 ```xml
 <!-- Jedis: Redis Java Client -->
@@ -69,11 +69,11 @@ Add the folowing snippet toconnect directly to the Memorystore for Valkey instan
 
 #### Jakarta
 
-To ensure that our api routes are correctly validated. Add the following dependency.
+To ensure that our API routes are correctly validated. Add the following dependency.
 This dependency enables the use of annotations like `@NotNull` and `@Size` on classes to automatically enforce input constraints, reducing the need for manual validation logic.
 
 ```xml
-<!-- Add Validation support-->
+<!-- Add validation support-->
 <dependency>
    <groupId>jakarta.validation</groupId>
    <artifactId>jakarta.validation-api</artifactId>
@@ -87,7 +87,7 @@ Next, add the following to the routing logic in the API.
 
 #### Initalizing the cache
 
-To ensure data is always availabe in the caching layer, a request is made to the database to update the cache if it is empty.
+To ensure data is always available in the caching layer, a request is made to the database to populate the cache if it is empty.
 
 ```java
 private boolean initializeCache() {
@@ -163,4 +163,4 @@ You can fine-tune cache expiration strategies (TTL values) and eviction policies
 
 By implementing this leaderboard system, you can easily display large amounts of sorted datasets, while also having the support to effectively filter the data. Leveraging caching with Valkey (Memorystore) significantly reduces database load while maintaining fast and reliable user experiences. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
 
-For more information check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/leaderboard) for the full project details and follow the instructions to get started.
+For more information, check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/leaderboard) for the full project details and follow the instructions to get started.
