@@ -32,6 +32,9 @@ public final class MemorystoreRemoveItemFromBasket {
     /** Item to be removed from the user's basket. */
     private static final String ITEM_ID = "ITEM_ID";
 
+    /** Quantity of items to be removed */
+    private static final Integer REMOVE_QUANTITY = -1;
+
     private MemorystoreRemoveItemFromBasket() {
         // No-op; won't be called
     }
@@ -49,13 +52,18 @@ public final class MemorystoreRemoveItemFromBasket {
             String basketKey = "basket:" + USER_ID;
 
             // Remove the item from the user's basket
-            long removed = jedis.srem(basketKey, ITEM_ID);
+            long newQty = jedis.hincrBy(basketKey, ITEM_ID, REMOVE_QUANTITY);
 
-            // Check if the item was successfully removed
-            if (removed > 0) {
+            // Print the item removed
+            System.out.printf("Removed %d items from basket: %s%n", REMOVE_QUANTITY, ITEM_ID);
+
+            // Remove the item if the quanitity is less than or equal to 0
+            if (newQty <= 0) {
+                // Remove the item from the basket
+                jedis.hdel(basketKey, ITEM_ID);
+
+                // print the item removed
                 System.out.printf("Removed item from basket: %s%n", ITEM_ID);
-            } else {
-                System.out.printf("Item not found in basket: %s%n", ITEM_ID);
             }
         } catch (Exception e) {
             String message = e.getMessage();

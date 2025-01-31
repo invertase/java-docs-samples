@@ -20,20 +20,23 @@ import redis.clients.jedis.JedisPool;
 
 public final class MemorystoreAddItemToBasket {
 
-    /** Replace the Memorystore instance id. */
+    /** Replace the Memorystore instance ID. */
     private static final String INSTANCE_ID = "INSTANCE_ID";
 
     /** Replace the Memorystore port, if not the default port. */
     private static final int PORT = 6379;
 
     /** User ID for managing the basket. */
-    private static final String USER_ID = "USERID";
+    private static final String USER_ID = "USER_ID";
 
     /** Item to be added to the user's basket. */
     private static final String ITEM_ID = "ITEM_ID";
 
+    /** Set how many items to be added to the basket. */
+    private static final int ITEM_COUNT = 1;
+
     private MemorystoreAddItemToBasket() {
-        // No-op; won't be called
+        // No-op constructor to prevent instantiation
     }
 
     /**
@@ -42,18 +45,18 @@ public final class MemorystoreAddItemToBasket {
      * @param args command-line arguments
      */
     public static void main(final String[] args) {
-        // Connect to the Memorystore instance
-        JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
+        // Create a Jedis connection pool
+        try (JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
+                Jedis jedis = pool.getResource()) {
 
-        try (Jedis jedis = pool.getResource()) {
             String basketKey = "basket:" + USER_ID;
 
-            // Add a single item to the user's basket
-            jedis.sadd(basketKey, ITEM);
-            System.out.printf("Added item to basket: %s%n", ITEM_ID);
+            // Add items to the user's basket
+            jedis.hincrBy(basketKey, ITEM_ID, ITEM_COUNT);
+            System.out.printf("Added %d items to basket: %s%n", ITEM_COUNT, ITEM_ID);
 
             // Verify the item is in the basket
-            boolean exists = jedis.sismember(basketKey, ITEM);
+            boolean exists = jedis.hexists(basketKey, ITEM_ID);
             if (exists) {
                 System.out.printf("Item successfully added: %s%n", ITEM_ID);
             } else {

@@ -20,14 +20,14 @@ import redis.clients.jedis.JedisPool;
 
 public final class MemorystoreClearBasket {
 
-    /** Replace the Memorystore instance id. */
+    /** Replace the Memorystore instance ID. */
     private static final String INSTANCE_ID = "INSTANCE_ID";
 
     /** Replace the Memorystore port, if not the default port. */
     private static final int PORT = 6379;
 
-    /** User ID for managing the basket. */
-    private static final String USER_ID = "USERID";
+    /** User ID for managing the basket */
+    private static final String USER_ID = "USER_ID";
 
     private MemorystoreClearBasket() {
         // No-op; won't be called
@@ -50,9 +50,7 @@ public final class MemorystoreClearBasket {
 
             // Verify if the basket was cleared
             if (deleted > 0) {
-                System.out.printf(
-                        "Basket cleared successfully for user: %s%n",
-                        USER_ID);
+                System.out.printf("Basket cleared successfully for user: %s%n", USER_ID);
             } else {
                 System.out.printf("No basket found for user: %s%n", USER_ID);
             }
