@@ -119,58 +119,70 @@ public void logout(String token) {
   }
 ```
 
-#### Adding to the shopping basket
-
-```java
-@PostMapping
-  public ResponseEntity<String> update(
-    @RequestBody(required = false) String items,
-    HttpServletRequest request
-  ) {
-    // Prevent the basket from getting too large to prevent abuse
-    if (items != null && items.length() > 1000) {
-      return ResponseEntity.badRequest().body("Basket too large");
-    }
-
-    String token = Utils.getTokenFromCookie(request.getCookies());
-    jedis.set("basket-" + token, items == null ? "" : items);
-    return ResponseEntity.ok("Basket updated");
-  }
-```
-
-#### Reading the shopping basket (retrieving values)
+### Getting the users shopping basket
 
 ```java
   @GetMapping
-  public ResponseEntity<String> get(HttpServletRequest request) {
-    String token = Utils.getTokenFromCookie(request.getCookies());
-    return ResponseEntity.ok(jedis.get("basket-" + token));
+  public ResponseEntity<Map<String, String>> getBasket(
+    HttpServletRequest request
+  ) {
+    String basketKey = getBasketKey(request);
+    return ResponseEntity.ok(jedis.hgetAll(basketKey));
+  }
+```
+
+#### Adding to the shopping basket
+
+```java
+  @PostMapping("/add")
+  public ResponseEntity<String> addItem(
+    @RequestParam String itemId,
+    @RequestParam(defaultValue = "1") int quantity,
+    HttpServletRequest request
+  ) {
+    String basketKey = getBasketKey(request);
+    long newQty = jedis.hincrBy(basketKey, itemId, quantity);
+    return ResponseEntity.ok("Quantity updated: " + newQty);
+  }
+```
+
+#### Removing an item to the shopping basket
+
+```java
+  @PostMapping("/remove")
+  public ResponseEntity<String> removeItem(
+    @RequestParam String itemId,
+    @RequestParam(defaultValue = "1") int quantity,
+    HttpServletRequest request
+  ) {
+    String basketKey = getBasketKey(request);
+    long newQty = jedis.hincrBy(basketKey, itemId, -quantity);
+    if (newQty <= 0) {
+      jedis.hdel(basketKey, itemId);
+      return ResponseEntity.ok("Item removed");
+    }
+    return ResponseEntity.ok("Quantity updated: " + newQty);
   }
 
 ```
 
-#### Verifiying a user token
+#### Clearing the shopping basket
 
 ```java
-  public String verify(String token) {
-    try {
-      // Retrieve username from Valkey
-      String username = jedis.get(token);
-
-      // No username found for the token
-      if (username == null) {
-        return null;
-      }
-
-      // Extend token expiration
-      jedis.expire(token, Global.TOKEN_EXPIRATION);
-
-      return username;
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to verify session token", e);
-    }
+  @PostMapping("/clear")
+  public ResponseEntity<String> clearBasket(HttpServletRequest request) {
+    jedis.del(getBasketKey(request));
+    return ResponseEntity.ok("Basket cleared");
   }
+```
 
+#### Getting the users session token
+
+```java
+private String getBasketKey(HttpServletRequest request) {
+    String token = Utils.getTokenFromCookie(request.getCookies());
+    return "basket:" + token;
+  }
 ```
 
 ## Scaling and Optimization
