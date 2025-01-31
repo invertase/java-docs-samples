@@ -14,7 +14,7 @@ You’ll set up a session management service for storing shopping cart items tha
 
 1. **Stores session data in PostgreSQL** for persistence.
 2. **Uses Valkey (Memorystore)** as an in-memory cache for faster session lookups.
-3. **Spring Boot Applications** Exposes RESTful API for creating, updating, deleting, and retrieving session items with auto expiry.
+3. **Spring Boot Application** exposes the RESTful API for creating, updating, deleting, and retrieving session items with auto expiry.
 4. **Deploys on Google Cloud Platform (GCP)** using services like Cloud Run, Cloud SQL, and Memorystore.
 
 By following this guide, you’ll implement a scalable and secure session management system.
