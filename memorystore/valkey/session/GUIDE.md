@@ -14,7 +14,7 @@ You’ll set up a session management service for storing shopping cart items tha
 
 1. **Stores session data in PostgreSQL** for persistence.
 2. **Uses Valkey (Memorystore)** as an in-memory cache for faster session lookups.
-3. **Spring Boot Applications** Exposes RESTful API for creating, updating, deleting, and retrieving session items with auto expiry..
+3. **Spring Boot Applications** Exposes RESTful API for creating, updating, deleting, and retrieving session items with auto expiry.
 4. **Deploys on Google Cloud Platform (GCP)** using services like Cloud Run, Cloud SQL, and Memorystore.
 
 By following this guide, you’ll implement a scalable and secure session management system.
@@ -37,10 +37,10 @@ To begin, we are will generate an API with the following routes:
 
 ### Creating a new application
 
-The first step is to initialize a brand new Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
+The first step is to initialize a Spring Boot application. The [official guide](https://spring.io/guides/gs/spring-boot) demonstrates how to generate a new project using [Spring Initializer](https://start.spring.io/).
 
-1. Choose `Maven` as the project type for this demonstration..
-2. Select Sprint Boot version 3.4.1
+1. Choose `Maven` as the project type for this demonstration.
+2. Select Sprint Boot version 3.4.1.
 3. Complete the appropriate metadata.
 4. Choose your preferred `Packing` for downloading.
 5. Select `Java 17` for your Java version.
@@ -65,7 +65,7 @@ Add the folowing snippet toconnect directly to the Memorystore for Valkey instan
 
 #### Jakarta
 
-To ensure that our api routes are correctly validated. Add the following dependency.
+To ensure that our API routes are correctly validated. Add the following dependency.
 This enables the use of annotations like `@NotNull` and `@Size` on classes to automatically enforce input constraints, reducing the need for manual validation logic.
 
 ```xml
@@ -138,7 +138,7 @@ public void logout(String token) {
   }
 ```
 
-#### Reading a the shopping basket (Retrieving Values)
+#### Reading the shopping basket (retrieving values)
 
 ```java
   @GetMapping
@@ -187,4 +187,4 @@ You can fine-tune cache expiration strategies (TTL values) and eviction policies
 
 By implementing this session management system, you ensure high performance, scalability, and secure session handling. Leveraging caching with Valkey (Memorystore) significantly reduces database load while maintaining fast and reliable user experiences. Running it in Google Cloud extends these benefits further, providing managed services and easy scaling.
 
-For more information check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/session) for the full project details and follow the instructions to get started.
+For more information, check out the [repository](https://github.com/GoogleCloudPlatform/java-docs-samples/tree/main/memorystore/valkey/session) for the full project details and follow the instructions to get started.
