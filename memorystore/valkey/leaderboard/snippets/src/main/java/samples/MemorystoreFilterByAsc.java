@@ -14,66 +14,68 @@
  * limitations under the License.
  */
 
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
-
 import java.util.AbstractMap.SimpleEntry;
 import java.util.List;
 import java.util.Set;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 public final class MemorystoreFilterByAsc {
 
-    /** Replace the Memorystore instance id. */
-    private static final String INSTANCE_ID = "INSTANCE_ID";
+  /** Replace the Memorystore instance id. */
+  private static final String INSTANCE_ID = "INSTANCE_ID";
 
-    /** Replace the Memorystore port, if not the default port. */
-    private static final int PORT = 6379;
+  /** Replace the Memorystore port, if not the default port. */
+  private static final int PORT = 6379;
 
-    /** Set the name for the Leaderboard */
-    private static final String LEADERBOARD_KEY = "leaderboard";
+  /** Set the name for the Leaderboard. */
+  private static final String LEADERBOARD_KEY = "leaderboard";
 
-    /** Replace the names and scores to write to Memorystore. */
-    private static final List<SimpleEntry<String, Double>> USER_SCORES =
-            List.of(
-                    new SimpleEntry<>("User1", 100.0),
-                    new SimpleEntry<>("User2", 80.0),
-                    new SimpleEntry<>("User3", 95.0),
-                    new SimpleEntry<>("User4", 70.0));
+  /** Replace the names and scores to write to Memorystore. */
+  private static final List<SimpleEntry<String, Double>> USER_SCORES = List.of(
+      new SimpleEntry<>("User1", 100.0),
+      new SimpleEntry<>("User2", 80.0),
+      new SimpleEntry<>("User3", 95.0),
+      new SimpleEntry<>("User4", 70.0));
 
-    private MemorystoreFilterByAsc() {
-        // No-op; won't be called
+  private MemorystoreFilterByAsc() {
+    // No-op; won't be called
+  }
+
+  /**
+   * Writes to Memorystore and retrieves the leaderboard sorted in ascending
+   * order.
+   *
+   * @param args command-line arguments
+   */
+  public static void main(final String[] args) {
+    // Connect to the Memorystore instance
+    JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
+
+    try (Jedis jedis = pool.getResource()) {
+      // Add the scores to the leaderboard
+      for (SimpleEntry<String, Double> entry : USER_SCORES) {
+        String user = entry.getKey();
+        Double score = entry.getValue();
+
+        jedis.zadd(LEADERBOARD_KEY, score, user);
+        System.out.printf("Added/Updated %s with score %s%n", user, score);
+      }
+
+      // Retrieve and print all users sorted by score in ascending order
+      Set<String> sortedUsers = jedis.zrange(LEADERBOARD_KEY, 0, -1);
+
+      // Print the leaderboard in ascending order
+      System.out.printf("Leaderboad (Ascending)");
+
+      // For each user, print the score
+      for (String user : sortedUsers) {
+        Double score = jedis.zscore(LEADERBOARD_KEY, user);
+
+        System.out.printf("User: %s, Score: %s%n", user, score);
+      }
+    } catch (Exception e) {
+      System.err.printf("Error connecting to Redis: %s%n", e.getMessage());
     }
-
-    /**
-     * Writes to Memorystore and retrieves the leaderboard sorted in ascending order.
-     *
-     * @param args command-line arguments
-     */
-    public static void main(final String[] args) {
-        // Connect to the Memorystore instance
-        JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
-
-        try (Jedis jedis = pool.getResource()) {
-            // Add the scores to the leaderboard
-            for (SimpleEntry<String, Double> entry : USER_SCORES) {
-                jedis.zadd(LEADERBOARD_KEY, entry.getValue(), entry.getKey());
-                System.out.printf(
-                        "Added/Updated %s with score %s%n", entry.getKey(), entry.getValue());
-            }
-
-            // Retrieve and print all users sorted by score in ascending order
-            Set<String> sortedUsers = jedis.zrange(LEADERBOARD_KEY, 0, -1);
-
-            // Print the leaderboard in ascending order
-            System.out.printf("Leaderboad (Ascending)");
-
-            // For each user, print the score
-            for (String user : sortedUsers) {
-                System.out.printf(
-                        "User: %s, Score: %s%n", user, jedis.zscore(LEADERBOARD_KEY, user));
-            }
-        } catch (Exception e) {
-            System.err.printf("Error connecting to Redis: %s%n", e.getMessage());
-        }
-    }
+  }
 }
