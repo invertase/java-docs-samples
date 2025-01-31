@@ -43,6 +43,7 @@ public final class MemorystoreClearBasket {
         JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
 
         try (Jedis jedis = pool.getResource()) {
+            // Set the redis key for the user's basket
             String basketKey = "basket:" + USER_ID;
 
             // Delete the basket (remove all items)

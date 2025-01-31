@@ -49,6 +49,7 @@ public final class MemorystoreAddItemToBasket {
         try (JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
                 Jedis jedis = pool.getResource()) {
 
+            // Set the redis key for the user's basket
             String basketKey = "basket:" + USER_ID;
 
             // Add items to the user's basket
