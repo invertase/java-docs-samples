@@ -95,3 +95,7 @@ Now you should have the application running on Google Cloud.
 - `POST /auth/login` - Logs in a user
 - `POST /auth/logout` - Logs out a user
 - `POST /auth/verify` - Verifies a user's token
+- `GET /api/basket` - Get all items
+- `POST /api/basket/add` - Add item with quantity
+- `POST /api/basket/remove` - Remove item quantity
+- `POST /api/basket/clear` - Clear entire basket

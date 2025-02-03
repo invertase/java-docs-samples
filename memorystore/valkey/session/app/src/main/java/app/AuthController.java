@@ -78,13 +78,15 @@ public class AuthController {
 
     // Attempt to log in
     String token = dataController.login(username, password);
+
+    // Invalid credentials
     if (token == null) {
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
         Global.INVALID_CREDENTIALS
       );
     }
 
-    // Create and set a secure cookie
+    // Create and set a cookie
     response.addCookie(Utils.createCookie(token));
     return ResponseEntity.ok(Global.LOGGED_IN);
   }
@@ -100,6 +102,7 @@ public class AuthController {
 
     // Logout user
     dataController.logout(token);
+
     return ResponseEntity.ok(Global.LOGGED_OUT);
   }
 

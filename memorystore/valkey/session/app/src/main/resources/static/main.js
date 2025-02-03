@@ -1,3 +1,5 @@
+window.items = [];
+
 let msTaken = new Date().getTime();
 
 verifyToken().then((data) => {
@@ -31,6 +33,8 @@ verifyToken().then((data) => {
       return response.json();
     })
     .then((items) => {
+      window.items = items;
+
       // Populate product grid
       const productGrid = document.getElementById("product-grid");
       items.forEach((item) => {
@@ -49,6 +53,9 @@ verifyToken().then((data) => {
         `;
         productGrid.appendChild(card);
       });
+
+      fetchBasket(); // Load the basket from the server
+      updateBasketDisplay(); // Initialize the basket display
 
       document.getElementById("shopping-interface").classList.remove("hidden");
     })
