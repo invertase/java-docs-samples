@@ -1,9 +1,5 @@
 package app;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.*;
-
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -14,6 +10,11 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import redis.clients.jedis.Jedis;
+
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class DataControllerTest {
@@ -62,15 +63,13 @@ class DataControllerTest {
       String token = "generatedToken";
 
       // Given
-      given(accountRepository.authenticateUser(username, password)).willReturn(
-        Optional.of(1)
-      ); // pretend userId = 1
+      given(accountRepository.authenticateUser(username, password))
+          .willReturn(Optional.of(1)); // pretend userId = 1
 
       // Mock static Utils.generateToken(...)
       try (MockedStatic<Utils> mockedUtils = Mockito.mockStatic(Utils.class)) {
-        mockedUtils
-          .when(() -> Utils.generateToken(Global.TOKEN_BYTE_LENGTH))
-          .thenReturn(token);
+        mockedUtils.when(() -> Utils.generateToken(Global.TOKEN_BYTE_LENGTH))
+            .thenReturn(token);
 
         // Action
         String result = dataController.login(username, password);
@@ -88,9 +87,8 @@ class DataControllerTest {
       String username = "testUser";
       String password = "wrongPassword";
 
-      given(accountRepository.authenticateUser(username, password)).willReturn(
-        Optional.empty()
-      );
+      given(accountRepository.authenticateUser(username, password))
+          .willReturn(Optional.empty());
 
       String result = dataController.login(username, password);
 
@@ -104,24 +102,20 @@ class DataControllerTest {
       String password = "securePassword";
       String token = "generatedToken";
 
-      given(accountRepository.authenticateUser(username, password)).willReturn(
-        Optional.of(1)
-      );
+      given(accountRepository.authenticateUser(username, password))
+          .willReturn(Optional.of(1));
 
       try (MockedStatic<Utils> mockedUtils = Mockito.mockStatic(Utils.class)) {
-        mockedUtils
-          .when(() -> Utils.generateToken(Global.TOKEN_BYTE_LENGTH))
-          .thenReturn(token);
+        mockedUtils.when(() -> Utils.generateToken(Global.TOKEN_BYTE_LENGTH))
+            .thenReturn(token);
 
         // Force an error in Jedis.set(...)
-        doThrow(new RuntimeException("Jedis error"))
-          .when(jedis)
-          .set(token, username);
+        doThrow(new RuntimeException("Jedis error")).when(jedis)
+            .set(token, username);
 
         // Should throw RuntimeException because Jedis fails
-        assertThrows(RuntimeException.class, () ->
-          dataController.login(username, password)
-        );
+        assertThrows(RuntimeException.class,
+            () -> dataController.login(username, password));
       }
     }
   }
