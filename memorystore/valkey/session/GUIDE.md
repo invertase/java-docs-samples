@@ -1,6 +1,6 @@
 # Building a Session Management Service on Google Cloud using Valkey, Spring Boot, and PostgreSQL
 
-Session management is a crucial part of modern web applications, ensuring that user interactions remain consistent and secure across multiple requests. This guide outlines how to create a session management system using Spring Boot, PostgreSQL, and Valkey (or Memorystore on GCP). By using a caching layer, the application can efficiently manage user sessions while reducing database load and ensuring scalability.
+Session management is a crucial part of modern web applications, ensuring that user interactions remain consistent and secure across multiple requests. This guide outlines how to create a session management system using Spring Boot, PostgreSQL, and Valkey (or Memorystore) on GCP. By using a caching layer, the application can efficiently manage user sessions while reducing database load and ensuring scalability.
 
 ## Why Session Management Matters
 
@@ -98,12 +98,8 @@ Next, add the following to the route logic in the API.
     // Generate token for the user
     String token = Utils.generateToken(Global.TOKEN_BYTE_LENGTH);
 
-    try {
-      jedis.set(token, username);
-      jedis.expire(token, Global.TOKEN_EXPIRATION);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to store session token", e);
-    }
+    // Store token in cache
+    jedis.setex(token, Global.TOKEN_EXPIRATION, username);
   }
 ```
 
@@ -111,11 +107,7 @@ Next, add the following to the route logic in the API.
 
 ```java
   public void logout(String token) {
-    try {
-      jedis.del(token);
-    } catch (Exception e) {
-      throw new RuntimeException("Failed to delete session token", e);
-    }
+    jedis.del(token);
   }
 ```
 
