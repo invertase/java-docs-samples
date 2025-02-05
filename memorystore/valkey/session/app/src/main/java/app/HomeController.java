@@ -1,25 +1,61 @@
+/*
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Serve the home page, login page, and register page at the specified routes.
+ */
 package app;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public final class HomeController {
 
+  /**
+   * Serves the home page.
+   *
+   * @param model
+   * @return the home page
+   */
   @GetMapping("/")
-  public String home(Model model) {
+  public String home(final Model model) {
     return "index"; // Refers to templates/index.html
   }
 
+  /**
+   * Serves the login page.
+   *
+   * @param model
+   * @return the login page
+   */
   @GetMapping("/login")
-  public String login(Model model) {
+  public String login(final Model model) {
     return "login"; // Refers to templates/login.html
   }
 
+  /**
+   * Serves the register page.
+   *
+   * @param model
+   * @return the register page
+   */
   @GetMapping("/register")
-  public String logout(Model model) {
+  public String logout(final Model model) {
     return "register"; // Refers to templates/register.html
   }
 }
