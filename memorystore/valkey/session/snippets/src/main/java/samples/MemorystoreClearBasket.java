@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+package samples;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
@@ -42,6 +44,8 @@ public final class MemorystoreClearBasket {
         try (JedisPool pool = new JedisPool(INSTANCE_ID, PORT);
                 Jedis jedis = pool.getResource()) {
 
+            String basketKey = "basket:" + USER_ID;
+
             // Delete the basket (remove all items)
             long deleted = jedis.del(basketKey);
 
@@ -52,7 +56,7 @@ public final class MemorystoreClearBasket {
                 System.out.printf("No basket found for user: %s%n", USER_ID);
             }
         } catch (Exception e) {
-            System.err.printf("Error connecting to Redis: %s%n", e.getMessage());
+            System.err.printf("Error connecting to Valkey: %s%n", e.getMessage());
         }
     }
 }
