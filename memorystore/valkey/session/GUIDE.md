@@ -100,7 +100,7 @@ Next, add the following to route logic to the API.
     String token = Utils.generateToken(Global.TOKEN_BYTE_LENGTH);
 
     try {
-      jedis.setex(token, username, Global.TOKEN_EXPIRATION);
+      jedis.setex(token, Global.TOKEN_EXPIRATION, username);
     } catch (Exception e) {
       throw new RuntimeException("Failed to store session token", e);
     }
